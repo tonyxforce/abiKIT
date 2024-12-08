@@ -4,7 +4,7 @@ CRGB leds[NUM_LEDS];
 
 bool ledsSetup()
 {
-	FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+	FastLED.addLeds<WS2812B, DATA_PIN>(leds, NUM_LEDS);
 	return true;
 }
 
