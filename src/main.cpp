@@ -2,17 +2,12 @@
 #include "main.h"
 #include "display.h"
 #include "leds.h"
-
-#define UPBTN 18
-#define LEFTBTN 16
-#define CENTERBTN 17
-#define RIGHTBTN 23
-#define DOWNBTN 19
+#include "network.h"
+#include "buttons.h"
+#include "gameEngine.h"
 
 float fps = 0;
 int frameCounter = 0;
-
-
 
 bool up = 0;
 bool left = 0;
@@ -29,6 +24,9 @@ void setup()
 	pinMode(DOWNBTN, INPUT_PULLUP);
 
 	Serial.begin(115200);
+
+	networkSetup();
+
 	Serial.println("displaysetup begin");
 	delay(10);
 	if (!displaySetup())
@@ -41,6 +39,7 @@ void setup()
 	}
 	Serial.println("ledssetup begin");
 	ledsSetup();
+	setLedBrightness(10);
 }
 
 unsigned int lastFpsCalc = 0;
@@ -54,16 +53,22 @@ void loop()
 		fps = frameCounter;
 		frameCounter = 0;
 	}
-	up = !digitalRead(UPBTN);
+/* 	up = !digitalRead(UPBTN);
 	left = !digitalRead(LEFTBTN);
 	center = !digitalRead(CENTERBTN);
 	right = !digitalRead(RIGHTBTN);
-	down = !digitalRead(DOWNBTN);
+	down = !digitalRead(DOWNBTN); */
 
-	u8g2.setFont(u8g2_font_t0_11_tf);
-	u8g2.print("FPS: ");
+	u8g2.setCursor(0,6);
+	u8g2.setFont(u8g2_font_4x6_mf);
 	u8g2.print(fps);
-	nextLine();
+	//nextLine();
+
+	handleButtons();
+	updateGame();
+	drawGame();
+	sendGameState();
+	receivePaddlePosition();
 
 	ledsLoop();
 	displayLoop();

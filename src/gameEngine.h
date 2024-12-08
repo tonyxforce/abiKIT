@@ -1,3 +1,12 @@
-long gameVars[10];
+#ifndef GAMEENGINE_H
+#define GAMEENGINE_H
 
-const long gameConsts[10];
+#include "games/pong.h"
+#include "buttons.h"
+#include "display.h"
+
+extern long gameVars[10];
+
+extern const long gameConsts[10];
+
+#endif

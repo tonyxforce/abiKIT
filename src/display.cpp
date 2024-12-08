@@ -16,7 +16,8 @@ bool displaySetup()
 bool displayLoop()
 {
 	u8g2.sendBuffer(); // update display
-	u8g2.setCursor(0, 8); // set cursor to next line
+	u8g2.clearBuffer();
+	//u8g2.setCursor(0, 8); // set cursor to first line
 	lineCount = 0;
 	return true;			 // reserved for error handling
 }

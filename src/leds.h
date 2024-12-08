@@ -11,5 +11,6 @@ bool ledsSetup();
 void ledsLoop();
 
 void fillLeds(CRGB color);
+void setLedBrightness(int value);
 
 #endif
