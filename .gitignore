@@ -3,3 +3,8 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+
+src/credentials.h
+
+test/*/node_modules
+test/*/*.js
