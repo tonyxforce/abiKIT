@@ -2,6 +2,8 @@
 #include "pong.h"
 #include "network.h"
 #include "leds.h"
+#include "display.h"
+#include "buttons.h"
 
 int paddle1Y = 30, paddle2Y = 30;
 int ballX = 64, ballY = 32;
@@ -41,7 +43,7 @@ void handleButtons()
 	else
 	{
 		player1Auto = false;
-			leds[0].r = 0;
+		leds[0].r = 0;
 	}
 }
 
@@ -55,13 +57,7 @@ void updateGame()
 		ballVelY = -ballVelY;
 
 	// Ball collision with paddles
-	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16)
-		ballVelX = -ballVelX;
-	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16)
-		ballVelX = -ballVelX;
-
-	// Ball out of bounds
-	if (ballX <= 0 || ballX >= 128)
+	if (ballX <= 1 || ballX >= 127)
 	{
 		if (ballX <= 0)
 			score2++;
@@ -70,22 +66,30 @@ void updateGame()
 		ballX = 64;
 		ballY = 32;
 	}
+
+	if (ballX <= 2 && ballY >= paddle1Y && ballY <= paddle1Y + 15)
+		ballVelX = -ballVelX;
+	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 15)
+		ballVelX = -ballVelX;
+
+	// Ball out of bounds
 }
 
 void drawGame()
 {
-	u8g2.drawBox(0, paddle1Y, 2, 16);		// Draw paddle 1
-	u8g2.drawBox(126, paddle2Y, 2, 16); // Draw paddle 2
-	u8g2.drawDisc(ballX, ballY, 2);			// Draw ball
-	u8g2.drawBox(64, 0, 1, 64);
-	if(!player1Auto && !player2Auto){
-	// 2/6 2/3
-	u8g2.setFont(u8g2_font_mystery_quest_24_tf);
-	u8g2.setCursor(/*2/6 of 128*/ 43, /*2/3 of 64*/ 43 - 6);
-	u8g2.print(score1);
-	// 2/3-width 2/3
-	u8g2.setCursor(/*2/3 of 128-width of a character*/ 85 - 8, /*2/3 of 64*/ 43 - 6);
-	u8g2.print(score2);
+	u8g2.drawBox(0, !player1Auto ? paddle1Y : constrain(ballY - 8, 0, 48), 2, 16);	 // Draw paddle 1
+	u8g2.drawBox(126, !player2Auto ? paddle2Y : constrain(ballY - 8, 0, 48), 2, 16); // Draw paddle 2
+	u8g2.drawDisc(ballX, ballY, 2);																									 // Draw ball
+	u8g2.drawBox(64, 0, 1, 64);																											 // Draw center line
+	if (!player1Auto && !player2Auto)
+	{
+		u8g2.setFont(u8g2_font_mystery_quest_24_tf);
+
+		u8g2.setCursor(/*2/6 of 128*/ 43, /*2/3 of 64*/ 43 - 6);
+		u8g2.drawStr(43 - u8g2.getStrWidth(String(score1).c_str()), 43 - 6, String(score1).c_str());
+
+		u8g2.setCursor(/*2/3 of 128-width of a character*/ 85 - u8g2.getStrWidth(String(score2).c_str()), /*2/3 of 64*/ 43 - 6);
+		u8g2.print(score2);
 	}
 }
 
@@ -107,18 +111,19 @@ void receivePaddlePosition()
 	{
 		lastPacketTime = millis();
 		leds[1].g = 255;
+		leds[1].r = 0;
 		ledsLoop();
 		int len = udp.read(incomingPacket, 255);
 		if (len > 0)
 		{
 			incomingPacket[len] = 0;
-			paddle2Y = atoi(incomingPacket); // Get paddle 2 position from client
-			clientIP = udp.remoteIP();			 // Get client IP address
+			paddle2Y = constrain(atoi(incomingPacket), 0, 48); // Get paddle 2 position from client
+			clientIP = udp.remoteIP();												 // Get client IP address
 		}
 	}
-	else if (millis() - lastPacketTime >= 500)
+	else if (millis() - lastPacketTime >= 800)
 	{
-		paddle2Y = constrain(ballY - 8, 0, 64 - 16);
+		// paddle2Y = constrain(ballY - 8, 0, 48);
 		ledsLoop();
 		player2Auto = true;
 		leds[1].g = 0;
@@ -129,4 +134,13 @@ void receivePaddlePosition()
 		player2Auto = false;
 		leds[1].r = 0;
 	};
+}
+
+void pongLoop()
+{
+	handleButtons();
+	updateGame();
+	drawGame();
+	sendGameState();
+	receivePaddlePosition();
 }

@@ -1,3 +1,6 @@
 #include "gameEngine.h"
+#include "games/pong.h"
 
-long gameVars[10];
+void gameLoop(){
+	pongLoop();
+}

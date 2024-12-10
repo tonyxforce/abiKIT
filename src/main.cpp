@@ -9,11 +9,13 @@
 float fps = 0;
 int frameCounter = 0;
 
-bool up = 0;
+/* bool up = 0;
 bool left = 0;
 bool center = 0;
 bool right = 0;
-bool down = 0;
+bool down = 0; */
+
+bool inMenu = false;
 
 void setup()
 {
@@ -43,9 +45,31 @@ void setup()
 }
 
 unsigned int lastFpsCalc = 0;
+unsigned int buttonPressStart = 0;
+bool buttonPressed = false;
+unsigned int buttonPressEnd = 0;
+
+void enterMenu();
 
 void loop()
 {
+	if (!digitalRead(CENTERBTN) && !buttonPressed)
+	{
+		buttonPressStart = millis();
+		buttonPressed = true;
+	};
+	if (digitalRead(CENTERBTN) && buttonPressed)
+	{
+		buttonPressEnd = millis();
+		buttonPressed = 0;
+	};
+
+	if (millis() - buttonPressStart >= 1000 && buttonPressed)
+	{
+		while(!digitalRead(CENTERBTN)) yield();
+		enterMenu();
+	};
+
 	frameCounter++;
 	if (millis() - lastFpsCalc >= 1000)
 	{
@@ -53,23 +77,34 @@ void loop()
 		fps = frameCounter;
 		frameCounter = 0;
 	}
-/* 	up = !digitalRead(UPBTN);
-	left = !digitalRead(LEFTBTN);
-	center = !digitalRead(CENTERBTN);
-	right = !digitalRead(RIGHTBTN);
-	down = !digitalRead(DOWNBTN); */
+	/* 	up = !digitalRead(UPBTN);
+		left = !digitalRead(LEFTBTN);
+		center = !digitalRead(CENTERBTN);
+		right = !digitalRead(RIGHTBTN);
+		down = !digitalRead(DOWNBTN); */
 
-	u8g2.setCursor(0,6);
+	u8g2.setCursor(0, 6);
 	u8g2.setFont(u8g2_font_4x6_mf);
 	u8g2.print(fps);
-	//nextLine();
+	// nextLine();
 
-	handleButtons();
-	updateGame();
-	drawGame();
-	sendGameState();
-	receivePaddlePosition();
+	if (!inMenu)
+	{
+		gameLoop();
+	}
+	else
+	{
+		if (!digitalRead(CENTERBTN))
+			u8g2.drawStr(0, 24, String(millis() - buttonPressStart).c_str());
+			else
+		u8g2.drawStr(0, 16, String(buttonPressEnd - buttonPressStart).c_str());
+	}
 
 	ledsLoop();
 	displayLoop();
+}
+
+void enterMenu()
+{
+	inMenu = true;
 }
