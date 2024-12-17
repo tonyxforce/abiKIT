@@ -8,14 +8,13 @@
 
 float fps = 0;
 int frameCounter = 0;
+int targetFps = 20;
 
 /* bool up = 0;
 bool left = 0;
 bool center = 0;
 bool right = 0;
 bool down = 0; */
-
-bool inMenu = false;
 
 void setup()
 {
@@ -63,10 +62,8 @@ void loop()
 	u8g2.setFont(u8g2_font_4x6_mf);
 	u8g2.print(fps);
 
-	if (millis() - lastFrameTime >= (1000 / 20))
+	if (millis() - lastFrameTime >= (1000 / targetFps))
 	{
-		lastFrameTime = millis();
-		frameCounter++;
 		newFrame = gameLoop();
 		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN))
 			processLoop();
@@ -76,13 +73,16 @@ void loop()
 	if (newFrame)
 	{
 		displayLoop();
+		ledsLoop();
+		frameCounter++;
+		lastFrameTime = millis();
 		newFrame = false;
 	}
 }
 
 void enterMenu()
 {
-	inMenu = true;
+	runningGame = GAME_MENU;
 }
 
 void processLoop()
@@ -112,6 +112,4 @@ void processLoop()
 	};
 
 	yield();
-
-	ledsLoop();
 }

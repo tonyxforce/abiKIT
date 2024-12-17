@@ -2,5 +2,6 @@
 #define PONG_H
 
 void pongLoop();
+void pongSetup();
 
 #endif

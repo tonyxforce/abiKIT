@@ -4,13 +4,19 @@
 #include "buttons.h"
 #include "display.h"
 #include "main.h"
+#include "leds.h"
+#include "buzzer.h"
+
+extern bool soundOn;
+
+extern bool debugMode;
 
 enum RunningGame{
-  MENU,
-	PONG,
-  SNAKE,
-  FLAPPYBIRD,
-  BREAKOUT,
+  GAME_MENU,
+	GAME_PONG,
+  GAME_SNAKE,
+  GAME_FLAPPYBIRD,
+  GAME_BREAKOUT,
 };
 
 extern RunningGame runningGame;

@@ -5,18 +5,39 @@
 #include "display.h"
 #include "buttons.h"
 
-int paddle1Y = 30, paddle2Y = 30;
-int ballX = 64, ballY = 32;
-int ballVelX = 3, ballVelY = 3;
+int paddle1Y, paddle2Y;
+int ballX, ballY;
+int ballVelX, ballVelY;
 
-int score1 = 0;
-int score2 = 0;
+int score1;
+int score2;
 
-bool player1Auto = false;
-bool player2Auto = false;
+bool player1Auto;
+bool player2Auto;
 
-unsigned long lastUserInput = 0;
-unsigned long lastPacketTime = 0;
+unsigned long lastUserInput;
+unsigned long lastPacketTime;
+
+void pongSetup()
+{
+	paddle1Y = 30;
+	paddle2Y = 30;
+
+	ballX = 64;
+	ballY = 32;
+
+	ballVelX = 3;
+	ballVelY = 3;
+
+	score1 = 0;
+	score2 = 0;
+
+	player1Auto = false;
+	player2Auto = false;
+
+	lastUserInput = millis();
+	lastPacketTime = millis();
+}
 
 void handleButtons()
 {
@@ -53,14 +74,20 @@ void updateGame()
 	ballY += ballVelY;
 
 	// Ball collision with top/bottom
-	if (ballY <= 0 || ballY >= 64)
+	if (ballY <= 0 || ballY >= 64){
 		ballVelY = -ballVelY;
+		beep(200, 50);
+	}
 
 	// Ball collision with paddles
-	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16)
+	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16){
 		ballVelX = -ballVelX;
-	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16)
+		beep(400, 50);
+	}
+	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16){
 		ballVelX = -ballVelX;
+		beep(400, 50);
+	}
 
 	// Ball out of bounds
 	if (ballX <= 0 || ballX >= 128)
@@ -68,14 +95,19 @@ void updateGame()
 		if (ballX <= 0)
 		{
 			score2++;
-			if(score2 >= 99999) score2 = 0;
+			if (score2 >= 99999)
+				score2 = 0;
 		}
-		if (ballX >= 128){
+		if (ballX >= 128)
+		{
 			score1++;
-			if(score1 >= 99999) score1 = 0;
+			if (score1 >= 99999)
+				score1 = 0;
 		}
 		ballX = 64;
 		ballY = 32;
+		beep(200, 150);
+
 	}
 }
 
@@ -85,25 +117,28 @@ void drawGame()
 	u8g2.drawBox(126, paddle2Y, 2, 16); // Draw paddle 2
 	u8g2.drawDisc(ballX, ballY, 2);			// Draw ball
 	u8g2.drawBox(64, 0, 1, 64);					// Draw center line
-	if ((!player1Auto && !player2Auto) || true)
+	if ((!player1Auto && !player2Auto))
 	{
 		u8g2.setFont(u8g2_font_t0_22_mn);
 
 		u8g2.setCursor(/*2/6 of 128*/ 43, /*2/3 of 64*/ 43 - 6);
-		u8g2.drawStr((64+5)/*  - u8g2.getStrWidth(String(score1).c_str()) */, 43 - 6, String(score1).c_str());
+		u8g2.drawStr((64 + 5) /*  - u8g2.getStrWidth(String(score1).c_str()) */, 43 - 6, String(score1).c_str());
 
-		u8g2.setCursor(/*2/3 of 128-width of a character*/ (64-5) - u8g2.getStrWidth(String(score2).c_str()), /*2/3 of 64*/ 43 - 6);
+		u8g2.setCursor(/*2/3 of 128-width of a character*/ (64 - 5) - u8g2.getStrWidth(String(score2).c_str()), /*2/3 of 64*/ 43 - 6);
 		u8g2.print(score2);
 	}
-	u8g2.setFont(u8g2_font_4x6_mf);
-	u8g2.setCursor(0, 16);
-	u8g2.print(ballX);
-	u8g2.print(" ");
-	u8g2.print(ballY);
-	u8g2.setCursor(0, 24);
-	u8g2.print(paddle1Y);
-	u8g2.print(" ");
-	u8g2.print(paddle2Y);
+	if (debugMode)
+	{
+		u8g2.setFont(u8g2_font_4x6_mf);
+		u8g2.setCursor(0, 16);
+		u8g2.print(ballX);
+		u8g2.print(" ");
+		u8g2.print(ballY);
+		u8g2.setCursor(0, 24);
+		u8g2.print(paddle1Y);
+		u8g2.print(" ");
+		u8g2.print(paddle2Y);
+	}
 }
 
 void sendGameState()

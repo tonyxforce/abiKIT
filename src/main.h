@@ -1,8 +1,7 @@
 void enterMenu();
-extern bool inMenu;
 
-extern unsigned int lastFpsCalc = 0;
-extern unsigned int buttonPressStart = 0;
-extern bool buttonPressed = false;
-extern unsigned int buttonPressEnd = 0;
-extern unsigned int lastFrameTime = 0;
+extern unsigned int lastFpsCalc;
+extern unsigned int buttonPressStart;
+extern bool buttonPressed;
+extern unsigned int buttonPressEnd;
+extern unsigned int lastFrameTime;

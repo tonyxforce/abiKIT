@@ -9,6 +9,8 @@ Fruit fruit(&snake);
 
 void snakeSetup() {
   Renderer::initialize();
+	snake = Snake();
+	fruit = Fruit(&snake);
 }
 
 void snakeLoop() {

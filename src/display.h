@@ -1,3 +1,7 @@
+#ifndef DISPLAY_H
+
+#define DISPLAY_H
+
 #include <Wire.h>
 #include <U8g2lib.h>
 
@@ -9,3 +13,6 @@ extern bool displayLoop();
 void nextLine();
 void printText(double text);
 void printText(String text);
+void printCenter(const char text[], int y);
+
+#endif

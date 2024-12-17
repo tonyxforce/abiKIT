@@ -17,9 +17,9 @@ bool displayLoop()
 {
 	u8g2.sendBuffer(); // update display
 	u8g2.clearBuffer();
-	//u8g2.setCursor(0, 8); // set cursor to first line
+	// u8g2.setCursor(0, 8); // set cursor to first line
 	lineCount = 0;
-	return true;			 // reserved for error handling
+	return true; // reserved for error handling
 }
 
 void nextLine()
@@ -46,3 +46,7 @@ void printText(double text)
 	u8g2.print(text);
 	nextLine();
 }
+void printCenter(const char text[], int y)
+{
+	u8g2.drawStr(64 - (u8g2.getStrWidth(text) / 2), y, text);
+};
