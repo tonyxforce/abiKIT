@@ -37,17 +37,17 @@ bool buttonIsPressed(ButtonName button)
 
 	case NAME_LEFTBTN:
 		button2Checked = true;
-		return button1JustPressed;
+		return button2JustPressed;
 		break;
 
 	case NAME_CENTERBTN:
 		button3Checked = true;
-		return button1JustPressed;
+		return button3JustPressed;
 		break;
 
 	case NAME_RIGHTBTN:
 		button4Checked = true;
-		return button1JustPressed;
+		return button4JustPressed;
 		break;
 
 	case NAME_DOWNBTN:
@@ -61,11 +61,38 @@ bool buttonIsPressed(ButtonName button)
 
 void buttonsLoop()
 {
+	if (button1Checked)
+	{
+		button1Checked = false;
+		button1JustPressed = false;
+	}
+	if (button2Checked)
+	{
+		button2Checked = false;
+		button2JustPressed = false;
+	}
+	if (button3Checked)
+	{
+		button3Checked = false;
+		button3JustPressed = false;
+	}
+	if (button4Checked)
+	{
+		button4Checked = false;
+		button4JustPressed = false;
+	}
+	if (button5Checked)
+	{
+		button5Checked = false;
+		button5JustPressed = false;
+	}
+
 	button1Pressed = !digitalRead(UPBTN);
 	button2Pressed = !digitalRead(LEFTBTN);
 	button3Pressed = !digitalRead(CENTERBTN);
 	button4Pressed = !digitalRead(RIGHTBTN);
 	button5Pressed = !digitalRead(DOWNBTN);
+	
 	if (button1Pressed != button1PressedBef)
 	{
 		button1PressedBef = button1Pressed;
@@ -92,29 +119,4 @@ void buttonsLoop()
 		button5JustPressed = button5Pressed;
 	}
 
-	if (button1Checked)
-	{
-		button1Checked = false;
-		button1JustPressed = false;
-	}
-	if (button2Checked)
-	{
-		button2Checked = false;
-		button2JustPressed = false;
-	}
-	if (button3Checked)
-	{
-		button3Checked = false;
-		button3JustPressed = false;
-	}
-	if (button4Checked)
-	{
-		button4Checked = false;
-		button4JustPressed = false;
-	}
-	if (button5Checked)
-	{
-		button5Checked = false;
-		button5JustPressed = false;
-	}
 }

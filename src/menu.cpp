@@ -24,13 +24,15 @@ enum SettingsMenuOption
 {
 	settingsmenuoption_SOUNDS,
 	settingsmenuoption_DEBUGMODE,
-	settingsmenuoption_BACK
+	settingsmenuoption_BACK,
+	settingsmenuoption_FOURTH
 };
 
-String settingssMenuOptionsStrings[] = {
+String settingsMenuOptionsStrings[] = {
 		"Hang ki/be",
 		"Debug mod ki/be",
-		"Vissza"};
+		"Vissza",
+		"Negyedik"};
 
 enum MenuType
 {
@@ -43,8 +45,8 @@ enum MenuType
 MenuType settingsMenuOptionsTypes[] = {
 		menutype_BOOLEAN,
 		menutype_BOOLEAN,
-		menutype_BUTTON
-};
+		menutype_BUTTON,
+		menutype_BUTTON};
 
 enum Menu
 {
@@ -79,16 +81,18 @@ bool menuLoop()
 		u8g2.setDrawColor(0);
 		printCenter(gameMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10);
 		break;
-		case MENU_SETTINGS:
-		optionsCount = settingssMenuOptionsStrings->length();
+
+	case MENU_SETTINGS:
+		u8g2.print("Teszt");
+		/* optionsCount = settingsMenuOptionsStrings->length();
 		for (int i = 0; i < optionsCount; i++)
 		{
 			if (i != selectedOption)
-				printCenter(settingssMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
+				printCenter(settingsMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
 		}
 		u8g2.setDrawColor(0);
-		printCenter(settingssMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10);
-		break;
+		printCenter(settingsMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10);
+		 */break;
 	};
 
 	if (buttonIsPressed(NAME_UPBTN))
@@ -96,19 +100,22 @@ bool menuLoop()
 		beep(600, 50);
 		selectedOption--;
 		if (selectedOption < 0)
-			selectedOption = min(5, optionsCount - 1);
+			selectedOption = max(0, min(5, optionsCount - 1));
 	}
 
 	if (buttonIsPressed(NAME_DOWNBTN))
 	{
 		beep(400, 50);
 		selectedOption++;
-		if (selectedOption > min(5, optionsCount - 1))
+		if (selectedOption > max(0, min(5, optionsCount - 1)))
 			selectedOption = 0;
 	}
 
 	if (!digitalRead(CENTERBTN))
 	{
+		while (!digitalRead(CENTERBTN))
+			yield();
+
 		switch (currentMenu)
 		{
 		case MENU_GAMES:
@@ -122,18 +129,26 @@ bool menuLoop()
 				break;
 			case 2:
 				currentMenu = MENU_SETTINGS;
+				selectedOption = 0;
 				break;
 			case 3:
-			break;
+				break;
 			}
 			break;
 		case MENU_SETTINGS:
 			switch (selectedOption)
 			{
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				break;
 			}
 			break;
 		};
-		selectedOption = 0;
 	}
 
 	return true;

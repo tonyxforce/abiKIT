@@ -39,6 +39,7 @@ void setup()
 	{
 		Serial.println("Display setup succeeded");
 	}
+	
 	Serial.println("ledssetup begin");
 	ledsSetup();
 	setLedBrightness(10);
@@ -78,13 +79,6 @@ void loop()
 			processLoop();
 		lastFrameRequestTime = millis();
 	}
-	if (newFrame)
-	{
-		displayLoop();
-		ledsLoop();
-		frameCounter++;
-		newFrame = false;
-	}
 }
 
 void enterMenu()
@@ -94,7 +88,6 @@ void enterMenu()
 
 void processLoop()
 {
-	buttonsLoop();
 	if (millis() - lastFpsCalc >= 1000)
 	{
 		lastFpsCalc = millis();
@@ -134,6 +127,14 @@ void processLoop()
 			yield();
 		enterMenu();
 	};
+
+	if (newFrame)
+	{
+		displayLoop();
+		ledsLoop();
+		frameCounter++;
+		newFrame = false;
+	}
 
 	yield();
 }
