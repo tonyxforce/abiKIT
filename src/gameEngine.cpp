@@ -6,9 +6,6 @@
 RunningGame runningGame = GAME_MENU;
 RunningGame runningGameBef = GAME_DEFAULT;
 
-bool debugMode = false; // // TODO: change this in production
-bool soundOn = true; // TODO: change this in production
-
 bool gameLoop()
 {
 	if (runningGame != runningGameBef)

@@ -127,7 +127,7 @@ void drawGame()
 		u8g2.setCursor(/*2/3 of 128-width of a character*/ (64 - 5) - u8g2.getStrWidth(String(score2).c_str()), /*2/3 of 64*/ 43 - 6);
 		u8g2.print(score2);
 	}
-	if (debugMode)
+	if (settings.debugMode)
 	{
 		u8g2.setFont(u8g2_font_4x6_mf);
 		u8g2.setCursor(0, 16);

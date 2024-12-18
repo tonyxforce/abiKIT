@@ -6,10 +6,7 @@
 #include "main.h"
 #include "leds.h"
 #include "buzzer.h"
-
-extern bool soundOn;
-
-extern bool debugMode;
+#include "settings.h"
 
 enum RunningGame{
   GAME_MENU,
