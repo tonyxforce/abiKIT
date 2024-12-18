@@ -16,19 +16,23 @@ enum MenuType
 	menutype_BUTTON,
 };
 
-const int gameMenuLen = 3;
+const int gameMenuLen = 5;
 
 enum GameMenuOption
 {
 	gamemenuoption_PONG,
 	gamemenuoption_SNAKE,
 	gamemenuoption_SETTINGS,
+	gamemenuoption_SHUTDOWN,
+	gamemenuoption_RESTART,
 };
 
 String gameMenuOptionsStrings[gameMenuLen] = {
 		"Pong",
 		"Snake",
-		"Beallitasok"};
+		"Beallitasok",
+		"Leallitas",
+		"Ujrainditas"};
 
 const int settingsMenuLen = 3;
 enum SettingsMenuOption
@@ -138,7 +142,6 @@ bool menuLoop()
 
 	if (!digitalRead(CENTERBTN))
 	{
-		beep(200, 50);
 
 		while (!digitalRead(CENTERBTN))
 			yield();
@@ -157,6 +160,16 @@ bool menuLoop()
 			case 2:
 				switchMenuTo(MENU_SETTINGS);
 				break;
+			case 3:
+			u8g2.clearDisplay();
+			u8g2.sendBuffer();
+			fillLeds(CRGB::Black);
+			ledsLoop();
+			esp_deep_sleep_start();
+			break;
+			case 4:
+			ESP.restart();
+			break;
 			}
 			selectedOption = 0;
 
@@ -172,11 +185,15 @@ bool menuLoop()
         beep(1000, 50);
 			}
 			beep(800, 50);
-				//saveSettings();
+				saveSettings();
 				break;
 			case 1:
-				settings.debugMode != settings.debugMode;
-				//saveSettings();
+				if(settings.debugMode){
+				settings.debugMode = false;
+			}else{
+				settings.debugMode = true;
+			}
+				saveSettings();
 			beep(800, 50);
 				
 				break;
@@ -186,6 +203,8 @@ bool menuLoop()
 			}
 			break;
 		};
+		beep(200, 50);
+
 	}
 
 	return true;
