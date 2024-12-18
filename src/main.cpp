@@ -5,6 +5,7 @@
 #include "network.h"
 #include "buttons.h"
 #include "gameEngine.h"
+#include "bootimg.h"
 
 int fps = 0;
 int frameCounter = 0;
@@ -19,16 +20,9 @@ bool down = 0; */
 
 void setup()
 {
-	pinMode(UPBTN, INPUT_PULLUP);
-	pinMode(LEFTBTN, INPUT_PULLUP);
-	pinMode(CENTERBTN, INPUT_PULLUP);
-	pinMode(RIGHTBTN, INPUT_PULLUP);
-	pinMode(DOWNBTN, INPUT_PULLUP);
-
 	Serial.begin(115200);
-
-	networkSetup();
-
+	loadSettings();
+	
 	Serial.println("displaysetup begin");
 	delay(10);
 	if (!displaySetup())
@@ -39,7 +33,21 @@ void setup()
 	{
 		Serial.println("Display setup succeeded");
 	}
+	u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
+	delay(100);
 	
+	EEPROM.begin(512);
+	loadSettings();
+	
+	pinMode(UPBTN, INPUT_PULLUP);
+	pinMode(LEFTBTN, INPUT_PULLUP);
+	pinMode(CENTERBTN, INPUT_PULLUP);
+	pinMode(RIGHTBTN, INPUT_PULLUP);
+	pinMode(DOWNBTN, INPUT_PULLUP);
+
+
+	networkSetup();
+
 	Serial.println("ledssetup begin");
 	ledsSetup();
 	setLedBrightness(10);
@@ -64,18 +72,19 @@ void loop()
 	processLoop();
 	buttonsLoop();
 
+	u8g2.setDrawColor(1);
 	u8g2.setCursor(0, 6);
 	u8g2.setFont(u8g2_font_4x6_mf);
 	u8g2.print(fps);
 	u8g2.print("FPS");
+	nextLine();
 
 	if (millis() - lastFrameRequestTime >= (1000 / targetFps))
 	{
-		u8g2.setDrawColor(1);
 		newFrame = gameLoop();
-		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && debugMode)
+		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && settings.debugMode)
 			processLoop();
-		while (digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && debugMode)
+		while (digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && settings.debugMode)
 			processLoop();
 		lastFrameRequestTime = millis();
 	}
