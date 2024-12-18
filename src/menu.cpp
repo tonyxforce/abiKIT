@@ -166,7 +166,7 @@ bool menuLoop()
 			{
 			case 0:
 			if(settings.soundEnabled){
-				settings.soundEnabled == false;
+				settings.soundEnabled = false;
 			}else{
 				settings.soundEnabled = true;
         beep(1000, 50);
