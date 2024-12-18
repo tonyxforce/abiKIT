@@ -4,10 +4,10 @@
 #include "menu.h"
 
 RunningGame runningGame = GAME_MENU;
-RunningGame runningGameBef = GAME_MENU;
+RunningGame runningGameBef = GAME_DEFAULT;
 
 bool debugMode = false; // // TODO: change this in production
-bool soundOn = false; // TODO: change this in production
+bool soundOn = true; // TODO: change this in production
 
 bool gameLoop()
 {
@@ -15,18 +15,23 @@ bool gameLoop()
 	{
 		fillLeds(0);
 
-		tone(25, 1000, 50);
+		beep(1000, 50);
 
 		switch (runningGame)
 		{
 		case GAME_MENU:
 			menuSetup();
+			targetFps = 1000;
 			break;
 		case GAME_PONG:
 			pongSetup();
+			targetFps = 20;
+
 			break;
 		case GAME_SNAKE:
 			snakeSetup();
+			targetFps = 20;
+
 			break;
 		}
 		runningGameBef = runningGame;

@@ -44,14 +44,14 @@ void handleButtons()
 	if (digitalRead(UPBTN) == LOW)
 	{
 		lastUserInput = millis();
-		paddle1Y -= 3;
+		paddle1Y -= 4;
 		if (paddle1Y < 0)
 			paddle1Y = 0;
 	}
 	if (digitalRead(DOWNBTN) == LOW)
 	{
 		lastUserInput = millis();
-		paddle1Y += 3;
+		paddle1Y += 4;
 		if (paddle1Y > 48)
 			paddle1Y = 48; // Limit paddle position
 	}

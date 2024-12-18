@@ -6,9 +6,10 @@
 #include "buttons.h"
 #include "gameEngine.h"
 
-float fps = 0;
+int fps = 0;
 int frameCounter = 0;
 int targetFps = 20;
+int temp = 0;
 
 /* bool up = 0;
 bool left = 0;
@@ -47,7 +48,10 @@ unsigned int lastFpsCalc = 0;
 unsigned int buttonPressStart = 0;
 bool buttonPressed = false;
 unsigned int buttonPressEnd = 0;
-unsigned int lastFrameTime = 0;
+unsigned int lastFrameRequestTime = 0;
+unsigned int lastUserInteraction = 0;
+bool isAfk = 0;
+bool wasAfk = 0;
 
 void enterMenu();
 void processLoop();
@@ -57,25 +61,28 @@ bool newFrame = false;
 void loop()
 {
 	processLoop();
+	buttonsLoop();
 
 	u8g2.setCursor(0, 6);
 	u8g2.setFont(u8g2_font_4x6_mf);
 	u8g2.print(fps);
+	u8g2.print("FPS");
 
-	if (millis() - lastFrameTime >= (1000 / targetFps))
+	if (millis() - lastFrameRequestTime >= (1000 / targetFps))
 	{
+		u8g2.setDrawColor(1);
 		newFrame = gameLoop();
-		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN))
+		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && debugMode)
 			processLoop();
-		while (digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN))
+		while (digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && debugMode)
 			processLoop();
+		lastFrameRequestTime = millis();
 	}
 	if (newFrame)
 	{
 		displayLoop();
 		ledsLoop();
 		frameCounter++;
-		lastFrameTime = millis();
 		newFrame = false;
 	}
 }
@@ -87,11 +94,28 @@ void enterMenu()
 
 void processLoop()
 {
+	buttonsLoop();
 	if (millis() - lastFpsCalc >= 1000)
 	{
 		lastFpsCalc = millis();
 		fps = frameCounter;
 		frameCounter = 0;
+	}
+
+	if (!digitalRead(UPBTN) || !digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN) || !digitalRead(CENTERBTN) || !digitalRead(DOWNBTN))
+	{
+		lastUserInteraction = millis();
+	}
+	isAfk = (millis() - lastUserInteraction > 10000);
+	if(isAfk != wasAfk){
+		wasAfk = isAfk;
+		if (isAfk && runningGame != GAME_PONG){
+			temp = targetFps;
+			targetFps = 5;
+		}
+		else{
+			targetFps = temp;
+		}
 	}
 	if (!digitalRead(CENTERBTN) && !buttonPressed)
 	{
