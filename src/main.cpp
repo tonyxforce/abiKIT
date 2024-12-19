@@ -21,7 +21,12 @@ bool down = 0; */
 void setup()
 {
 	Serial.begin(115200);
+	EEPROM.begin(512);
 	loadSettings();
+
+	Serial.println("ledssetup begin");
+	ledsSetup();
+	setLedBrightness(settings.brightness);
 	
 	Serial.println("displaysetup begin");
 	delay(10);
@@ -34,10 +39,8 @@ void setup()
 		Serial.println("Display setup succeeded");
 	}
 	u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
-	delay(100);
+	delay(500);
 	
-	EEPROM.begin(512);
-	loadSettings();
 	
 	pinMode(UPBTN, INPUT_PULLUP);
 	pinMode(LEFTBTN, INPUT_PULLUP);
@@ -47,10 +50,6 @@ void setup()
 
 
 	networkSetup();
-
-	Serial.println("ledssetup begin");
-	ledsSetup();
-	setLedBrightness(10);
 }
 
 unsigned int lastFpsCalc = 0;

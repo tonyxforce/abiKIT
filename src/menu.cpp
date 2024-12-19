@@ -54,6 +54,10 @@ MenuType settingsMenuOptionsTypes[] = {
 		menutype_BUTTON,
 		menutype_BUTTON};
 
+int optionsNumberLimits[][2] = {
+		{0, 255},
+};
+
 bool *changeableOptions[settingsMenuLen] = {
 		&settings.debugMode,
 		&settings.soundEnabled,
@@ -161,15 +165,15 @@ bool menuLoop()
 				switchMenuTo(MENU_SETTINGS);
 				break;
 			case 3:
-			u8g2.clearDisplay();
-			u8g2.sendBuffer();
-			fillLeds(CRGB::Black);
-			ledsLoop();
-			esp_deep_sleep_start();
-			break;
+				u8g2.clearDisplay();
+				u8g2.sendBuffer();
+				fillLeds(CRGB::Black);
+				ledsLoop();
+				esp_deep_sleep_start();
+				break;
 			case 4:
-			ESP.restart();
-			break;
+				ESP.restart();
+				break;
 			}
 			selectedOption = 0;
 
@@ -178,24 +182,30 @@ bool menuLoop()
 			switch (selectedOption)
 			{
 			case 0:
-			if(settings.soundEnabled){
-				settings.soundEnabled = false;
-			}else{
-				settings.soundEnabled = true;
-        beep(1000, 50);
-			}
-			beep(800, 50);
+				if (settings.soundEnabled)
+				{
+					settings.soundEnabled = false;
+				}
+				else
+				{
+					settings.soundEnabled = true;
+					beep(1000, 50);
+				}
+				beep(800, 50);
 				saveSettings();
 				break;
 			case 1:
-				if(settings.debugMode){
-				settings.debugMode = false;
-			}else{
-				settings.debugMode = true;
-			}
+				if (settings.debugMode)
+				{
+					settings.debugMode = false;
+				}
+				else
+				{
+					settings.debugMode = true;
+				}
 				saveSettings();
-			beep(800, 50);
-				
+				beep(800, 50);
+
 				break;
 			case 2:
 				goBack();
@@ -204,7 +214,6 @@ bool menuLoop()
 			break;
 		};
 		beep(200, 50);
-
 	}
 
 	return true;
