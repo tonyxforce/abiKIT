@@ -10,10 +10,9 @@ int selectedOption = 0;
 
 enum MenuType
 {
+	menutype_GENERAL,
 	menutype_CHECKBOX,
-	menutype_NUMBER,
-	menutype_MENU,
-	menutype_BUTTON,
+	menutype_SLIDER,
 };
 
 const int gameMenuLen = 5;
@@ -34,30 +33,27 @@ String gameMenuOptionsStrings[gameMenuLen] = {
 		"Leallitas",
 		"Ujrainditas"};
 
-const int settingsMenuLen = 3;
+const int settingsMenuLen = 4;
 enum SettingsMenuOption
 {
 	settingsmenuoption_SOUNDS,
 	settingsmenuoption_DEBUGMODE,
+	settingsmenuoption_BRIGHTNESS,
 	settingsmenuoption_BACK,
 };
 
 String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Hang ki/be",
 		"Debug mod ki/be",
+		"Fenyero",
 		"Vissza",
 };
 
-MenuType settingsMenuOptionsTypes[] = {
+MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
-		menutype_BUTTON,
-		menutype_BUTTON};
-
-bool *changeableOptions[settingsMenuLen] = {
-		&settings.debugMode,
-		&settings.soundEnabled,
-		nullptr,
+		menutype_SLIDER,
+		menutype_GENERAL,
 };
 
 enum Menu
@@ -105,10 +101,8 @@ bool menuLoop()
 		optionsCount = settingsMenuLen;
 		for (int i = 0; i < optionsCount; i++)
 		{
-			if (i != selectedOption)
-			{
-				printCenter(settingsMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
-			}
+			u8g2.setDrawColor(i != selectedOption);
+			printCenter(settingsMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
 			if (settingsMenuOptionsTypes[i] == menutype_CHECKBOX)
 			{
 				u8g2.setDrawColor(i != selectedOption);
@@ -116,11 +110,13 @@ bool menuLoop()
 				if ((i == 0 ? settings.soundEnabled : i == 1 ? settings.debugMode
 																										 : false) == true)
 					u8g2.drawBox(110, (i * 9) + 11, 7, 7);
-				u8g2.setDrawColor(1);
+			}
+			else if (settingsMenuOptionsTypes[i] == menutype_SLIDER)
+			{
+				u8g2.setDrawColor(i == selectedOption);
 			}
 		}
 		u8g2.setDrawColor(0);
-		printCenter(settingsMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10);
 		break;
 	};
 
@@ -139,6 +135,24 @@ bool menuLoop()
 		if (selectedOption > constrain(optionsCount - 1, 0, 5))
 			selectedOption = 0;
 	}
+	if (!digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN))
+	{
+		switch (currentMenu)
+		{
+		case MENU_SETTINGS:
+			switch (selectedOption)
+			{
+			case settingsmenuoption_BRIGHTNESS:
+				if (buttonIsPressed(NAME_LEFTBTN))
+					settings.brightness = settings.brightness - 10;
+				if (buttonIsPressed(NAME_RIGHTBTN))
+					settings.brightness = settings.brightness - 10;
+
+				break;
+			}
+			break;
+		}
+	}
 
 	if (!digitalRead(CENTERBTN))
 	{
@@ -151,25 +165,25 @@ bool menuLoop()
 		case MENU_GAMES:
 			switch (selectedOption)
 			{
-			case 0:
+			case gamemenuoption_PONG:
 				runningGame = GAME_PONG;
 				break;
-			case 1:
+			case gamemenuoption_SNAKE:
 				runningGame = GAME_SNAKE;
 				break;
-			case 2:
+			case gamemenuoption_SETTINGS:
 				switchMenuTo(MENU_SETTINGS);
 				break;
-			case 3:
-			u8g2.clearDisplay();
-			u8g2.sendBuffer();
-			fillLeds(CRGB::Black);
-			ledsLoop();
-			esp_deep_sleep_start();
-			break;
-			case 4:
-			ESP.restart();
-			break;
+			case gamemenuoption_SHUTDOWN:
+				u8g2.clearDisplay();
+				u8g2.sendBuffer();
+				fillLeds(CRGB::Black);
+				ledsLoop();
+				esp_deep_sleep_start();
+				break;
+			case gamemenuoption_RESTART:
+				ESP.restart();
+				break;
 			}
 			selectedOption = 0;
 
@@ -177,34 +191,40 @@ bool menuLoop()
 		case MENU_SETTINGS:
 			switch (selectedOption)
 			{
-			case 0:
-			if(settings.soundEnabled){
-				settings.soundEnabled = false;
-			}else{
-				settings.soundEnabled = true;
-        beep(1000, 50);
-			}
-			beep(800, 50);
+			case settingsmenuoption_SOUNDS:
+				if (settings.soundEnabled)
+				{
+					settings.soundEnabled = false;
+				}
+				else
+				{
+					settings.soundEnabled = true;
+					beep(1000, 50);
+				}
+				beep(800, 50);
 				saveSettings();
 				break;
-			case 1:
-				if(settings.debugMode){
-				settings.debugMode = false;
-			}else{
-				settings.debugMode = true;
-			}
+			case settingsmenuoption_DEBUGMODE:
+				if (settings.debugMode)
+				{
+					settings.debugMode = false;
+				}
+				else
+				{
+					settings.debugMode = true;
+				}
 				saveSettings();
-			beep(800, 50);
-				
+				beep(800, 50);
+
 				break;
-			case 2:
+
+			case settingsmenuoption_BACK:
 				goBack();
 				break;
 			}
 			break;
 		};
 		beep(200, 50);
-
 	}
 
 	return true;
