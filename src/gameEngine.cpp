@@ -12,7 +12,7 @@ bool gameLoop()
 	{
 		fillLeds(0);
 
-		beep(1000, 50);
+		beep(1000, 50, BEEPTYPE_MENU);
 
 		switch (runningGame)
 		{

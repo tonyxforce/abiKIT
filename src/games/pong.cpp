@@ -76,17 +76,17 @@ void updateGame()
 	// Ball collision with top/bottom
 	if (ballY <= 0 || ballY >= 64){
 		ballVelY = -ballVelY;
-		beep(200, 50);
+		beep(200, 50, BEEPTYPE_GAME);
 	}
 
 	// Ball collision with paddles
 	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16){
 		ballVelX = -ballVelX;
-		beep(400, 50);
+		beep(400, 50, BEEPTYPE_GAME);
 	}
 	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16){
 		ballVelX = -ballVelX;
-		beep(400, 50);
+		beep(400, 50, BEEPTYPE_GAME);
 	}
 
 	// Ball out of bounds

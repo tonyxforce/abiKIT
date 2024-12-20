@@ -33,10 +33,11 @@ String gameMenuOptionsStrings[gameMenuLen] = {
 		"Leallitas",
 		"Ujrainditas"};
 
-const int settingsMenuLen = 4;
+const int settingsMenuLen = 5;
 enum SettingsMenuOption
 {
 	settingsmenuoption_SOUNDS,
+	settingsmenuoption_MENUSOUNDS,
 	settingsmenuoption_DEBUGMODE,
 	settingsmenuoption_BRIGHTNESS,
 	settingsmenuoption_BACK,
@@ -44,6 +45,7 @@ enum SettingsMenuOption
 
 String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Hang ki/be",
+		"Menu hang ki/be"
 		"Debug mod ki/be",
 		"Fenyero",
 		"Vissza",
@@ -107,8 +109,8 @@ bool menuLoop()
 			{
 				u8g2.setDrawColor(i != selectedOption);
 				u8g2.drawFrame(110, (i * 9) + 11, 7, 7);
-				if ((i == 0 ? settings.soundEnabled : i == 1 ? settings.debugMode
-																										 : false) == true)
+				if ((i == settingsmenuoption_SOUNDS ? settings.soundEnabled : i == settingsmenuoption_DEBUGMODE ? settings.debugMode
+																										 : i == settingsmenuoption_MENUSOUNDS ? settings.menuSounds : false) == true)
 					u8g2.drawBox(110, (i * 9) + 11, 7, 7);
 			}
 			else if (settingsMenuOptionsTypes[i] == menutype_SLIDER)
@@ -122,7 +124,7 @@ bool menuLoop()
 
 	if (buttonIsPressed(NAME_UPBTN))
 	{
-		beep(600, 50);
+		beep(600, 50, BEEPTYPE_MENU);
 		selectedOption--;
 		if (selectedOption < 0)
 			selectedOption = constrain(optionsCount - 1, 0, 5);
@@ -130,7 +132,7 @@ bool menuLoop()
 
 	if (buttonIsPressed(NAME_DOWNBTN))
 	{
-		beep(400, 50);
+		beep(400, 50, BEEPTYPE_MENU);
 		selectedOption++;
 		if (selectedOption > constrain(optionsCount - 1, 0, 5))
 			selectedOption = 0;
@@ -199,10 +201,16 @@ bool menuLoop()
 				else
 				{
 					settings.soundEnabled = true;
-					beep(1000, 50);
 				}
-				beep(800, 50);
 				saveSettings();
+				break;
+				case settingsmenuoption_MENUSOUNDS:
+				if(settings.menuSounds){
+					settings.menuSounds = false;
+				}else{
+					settings.menuSounds = true;
+				}
+				
 				break;
 			case settingsmenuoption_DEBUGMODE:
 				if (settings.debugMode)
@@ -214,13 +222,16 @@ bool menuLoop()
 					settings.debugMode = true;
 				}
 				saveSettings();
-				beep(800, 50);
 
 				break;
 
 			case settingsmenuoption_BACK:
 				goBack();
 				break;
+			}
+			if(settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX){
+				beep(1000, 50, BEEPTYPE_MENU);
+				beep(800, 50, BEEPTYPE_MENU);
 			}
 			break;
 		};

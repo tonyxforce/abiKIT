@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#define CONFIG_VERSION "000"
+#define CONFIG_VERSION "010"
 
 // Dont change this
 #define CONFIG_START 0
@@ -14,6 +14,7 @@ struct Settings
 	char version[4];
 	int brightness;
 	bool debugMode;
+	bool menuSounds;
 	bool soundEnabled;
 	uint8_t resetCounter, wdtCounter;
 };

@@ -1,19 +1,21 @@
 #include "settings.h"
 
-Settings settings = {
-		CONFIG_VERSION,
-		10,
-		false,
-		true,
-		0, 0};
-
 /*
 	char version[4];
 	int brightness;
 	bool debugMode;
 	bool soundEnabled;
+	bool menuSounds;
 	uint8_t resetCounter, wdtCounter;
 	 */
+Settings settings = {
+		CONFIG_VERSION,
+		10,
+		false,
+		true,
+		true,
+		0, 0};
+
 
 void saveSettings()
 {
