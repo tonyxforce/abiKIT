@@ -8,6 +8,6 @@ enum Beeptype{
 	BEEPTYPE_MENU
 };
 
-void beep(unsigned int frequency, unsigned long duration = 0UL, Beeptype beeptype);
+void beep(unsigned int frequency, unsigned long duration, Beeptype beeptype);
 
 #endif
