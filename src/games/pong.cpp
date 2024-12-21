@@ -41,7 +41,7 @@ void pongSetup()
 
 void handleButtons()
 {
-	if (digitalRead(UPBTN) == LOW)
+	if (digitalRead(!settings.oneHanded ? UPBTN : CENTERBTN) == LOW)
 	{
 		lastUserInput = millis();
 		paddle1Y -= 4;
@@ -58,11 +58,16 @@ void handleButtons()
 	if (millis() - lastUserInput > 5000)
 	{
 		player1Auto = true;
-		leds[0].r = 255;
+		leds[0] = CRGB::Red;
+
 		paddle1Y = constrain(ballY - 5, 0, 48);
 	}
 	else
 	{
+		if (millis() - lastUserInput > 2500)
+		{
+			leds[0] = CRGB::Blue;
+		}else leds[0] = CRGB::Green;
 		player1Auto = false;
 		leds[0].r = 0;
 	}
@@ -74,19 +79,32 @@ void updateGame()
 	ballY += ballVelY;
 
 	// Ball collision with top/bottom
-	if (ballY <= 0 || ballY >= 64){
+	if (ballY <= 0 || ballY >= 64)
+	{
 		ballVelY = -ballVelY;
 		beep(200, 50, BEEPTYPE_GAME);
 	}
 
 	// Ball collision with paddles
-	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16){
+	if (ballX <= 4 && ballY >= paddle1Y && ballY <= paddle1Y + 16)
+	{
 		ballVelX = -ballVelX;
 		beep(400, 50, BEEPTYPE_GAME);
+		leds[3].blue = 255;
 	}
-	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16){
+	else
+	{
+		leds[3].blue = 0;
+	}
+	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16)
+	{
 		ballVelX = -ballVelX;
 		beep(400, 50, BEEPTYPE_GAME);
+		leds[2].blue = 255;
+	}
+	else
+	{
+		leds[2].blue = 0;
 	}
 
 	// Ball out of bounds
@@ -107,7 +125,6 @@ void updateGame()
 		ballX = 64;
 		ballY = 32;
 		beep(200, 150, BEEPTYPE_GAME);
-
 	}
 }
 
@@ -117,6 +134,12 @@ void drawGame()
 	u8g2.drawBox(126, paddle2Y, 2, 16); // Draw paddle 2
 	u8g2.drawDisc(ballX, ballY, 2);			// Draw ball
 	u8g2.drawBox(64, 0, 1, 64);					// Draw center line
+
+	leds[2].red = constrain(map(ballX - 64, 0, 64, 0, 255), 0, 255);
+	leds[2].green = 255 - leds[2].red;
+	leds[3].red = constrain(map(64 - ballX, 0, 64, 0, 255), 0, 255);
+	leds[3].green = 255 - leds[3].red;
+
 	if ((!player1Auto && !player2Auto))
 	{
 		u8g2.setFont(u8g2_font_t0_22_mn);
@@ -126,6 +149,15 @@ void drawGame()
 
 		u8g2.setCursor(/*2/3 of 128-width of a character*/ (64 - 5) - u8g2.getStrWidth(String(score2).c_str()), /*2/3 of 64*/ 43 - 6);
 		u8g2.print(score2);
+	}
+	else if (player1Auto && player2Auto)
+	{
+		tempFps = targetFps;
+		targetFps = 1000;
+	}
+	else
+	{
+		targetFps = max(tempFps, 30);
 	}
 	if (settings.debugMode)
 	{

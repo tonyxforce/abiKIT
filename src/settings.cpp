@@ -4,18 +4,22 @@
 	char version[4];
 	int brightness;
 	bool debugMode;
-	bool soundEnabled;
 	bool menuSounds;
+	bool oneHanded;
+	bool soundEnabled;
+	bool clientMode;
 	uint8_t resetCounter, wdtCounter;
 	 */
 Settings settings = {
-		CONFIG_VERSION,
-		10,
-		false,
-		true,
-		true,
-		0, 0};
-
+		CONFIG_VERSION, // version
+		10,							// brightness
+		false,					// debugMode
+		true,						// menusounds
+		false,					// oneHanded
+		true,						// soundEnabled
+		false,					// clientMode
+		0, 0						// reset, wdtcounter
+};
 
 void saveSettings()
 {
