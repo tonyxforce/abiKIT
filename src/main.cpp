@@ -38,8 +38,11 @@ void setup()
 	{
 		Serial.println("Display setup succeeded");
 	}
-	u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
-	delay(500);
+	//u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
+	//u8g2.sendBuffer();
+	//delay(500);
+	u8g2.clearBuffer();
+	u8g2.sendBuffer();
 	
 	
 	pinMode(UPBTN, INPUT_PULLUP);
