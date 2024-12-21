@@ -106,7 +106,7 @@ void updateGame()
 		}
 		ballX = 64;
 		ballY = 32;
-		beep(200, 150);
+		beep(200, 150, BEEPTYPE_GAME);
 
 	}
 }

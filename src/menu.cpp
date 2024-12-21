@@ -12,7 +12,7 @@ enum MenuType
 {
 	menutype_GENERAL,
 	menutype_CHECKBOX,
-	menutype_SLIDER,
+	menutype_NUMBER,
 };
 
 const int gameMenuLen = 5;
@@ -45,7 +45,7 @@ enum SettingsMenuOption
 
 String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Hang ki/be",
-		"Menu hang ki/be"
+		"Menu hang ki/be",
 		"Debug mod ki/be",
 		"Fenyero",
 		"Vissza",
@@ -54,7 +54,8 @@ String settingsMenuOptionsStrings[settingsMenuLen] = {
 MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
-		menutype_SLIDER,
+		menutype_CHECKBOX,
+		menutype_NUMBER,
 		menutype_GENERAL,
 };
 
@@ -100,25 +101,48 @@ bool menuLoop()
 		break;
 
 	case MENU_SETTINGS:
+		if(selectedOption == settingsmenuoption_BRIGHTNESS){
+								fillLeds(0);
+					leds[0].red = 255;
+					leds[1].green = 255;
+					leds[2].blue = 255;
+					leds[3].red = 255;
+					leds[3].green = 255;
+		}else{
+			fillLeds(0);
+		}
 		optionsCount = settingsMenuLen;
 		for (int i = 0; i < optionsCount; i++)
 		{
-			u8g2.setDrawColor(i != selectedOption);
-			printCenter(settingsMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
+			bool baseColor = i != selectedOption;
+			bool invertedColor = !baseColor;
+			int height = ((i + 1) * 9) + 10;
+			u8g2.setDrawColor(baseColor);
+			printCenter(settingsMenuOptionsStrings[i].c_str(), height);
 			if (settingsMenuOptionsTypes[i] == menutype_CHECKBOX)
 			{
-				u8g2.setDrawColor(i != selectedOption);
-				u8g2.drawFrame(110, (i * 9) + 11, 7, 7);
+				u8g2.setDrawColor(baseColor);
+				u8g2.drawFrame(110, height - 8, 7, 7);
 				if ((i == settingsmenuoption_SOUNDS ? settings.soundEnabled : i == settingsmenuoption_DEBUGMODE ? settings.debugMode
-																										 : i == settingsmenuoption_MENUSOUNDS ? settings.menuSounds : false) == true)
-					u8g2.drawBox(110, (i * 9) + 11, 7, 7);
+																																	: i == settingsmenuoption_MENUSOUNDS	? settings.menuSounds
+																																																				: false) == true)
+					u8g2.drawBox(110, height - 8, 7, 7);
 			}
-			else if (settingsMenuOptionsTypes[i] == menutype_SLIDER)
+			else if (settingsMenuOptionsTypes[i] == menutype_NUMBER)
 			{
-				u8g2.setDrawColor(i == selectedOption);
+				u8g2.setDrawColor(baseColor);
+				String temp = "";
+				switch (i)
+				{
+				case settingsmenuoption_BRIGHTNESS:
+					temp += map(settings.brightness, 0, 255, 0, 100);
+					break;
+				}
+				temp += "%";
+				u8g2.drawStr(90, height, temp.c_str());
 			}
 		}
-		u8g2.setDrawColor(0);
+		u8g2.setDrawColor(1); // Reset draw color
 		break;
 	};
 
@@ -137,6 +161,7 @@ bool menuLoop()
 		if (selectedOption > constrain(optionsCount - 1, 0, 5))
 			selectedOption = 0;
 	}
+	
 	if (!digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN))
 	{
 		switch (currentMenu)
@@ -146,10 +171,11 @@ bool menuLoop()
 			{
 			case settingsmenuoption_BRIGHTNESS:
 				if (buttonIsPressed(NAME_LEFTBTN))
-					settings.brightness = settings.brightness - 10;
+					settings.brightness = settings.brightness - (!digitalRead(CENTERBTN) ? 20 : 5);
 				if (buttonIsPressed(NAME_RIGHTBTN))
-					settings.brightness = settings.brightness - 10;
-
+					settings.brightness = settings.brightness + (!digitalRead(CENTERBTN) ? 20 : 5);
+				settings.brightness = constrain(settings.brightness, 0, 255);
+				FastLED.setBrightness(settings.brightness);
 				break;
 			}
 			break;
@@ -202,15 +228,17 @@ bool menuLoop()
 				{
 					settings.soundEnabled = true;
 				}
-				saveSettings();
 				break;
-				case settingsmenuoption_MENUSOUNDS:
-				if(settings.menuSounds){
+			case settingsmenuoption_MENUSOUNDS:
+				if (settings.menuSounds)
+				{
 					settings.menuSounds = false;
-				}else{
+				}
+				else
+				{
 					settings.menuSounds = true;
 				}
-				
+
 				break;
 			case settingsmenuoption_DEBUGMODE:
 				if (settings.debugMode)
@@ -221,21 +249,21 @@ bool menuLoop()
 				{
 					settings.debugMode = true;
 				}
-				saveSettings();
-
 				break;
 
 			case settingsmenuoption_BACK:
+				saveSettings();
 				goBack();
 				break;
 			}
-			if(settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX){
+			if (settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX)
+			{
 				beep(1000, 50, BEEPTYPE_MENU);
 				beep(800, 50, BEEPTYPE_MENU);
 			}
 			break;
 		};
-		beep(200, 50);
+		beep(200, 50, BEEPTYPE_MENU);
 	}
 
 	return true;
