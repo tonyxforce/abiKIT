@@ -121,12 +121,12 @@ void processLoop()
 			targetFps = tempFps;
 		}
 	}
-	if (!digitalRead(CENTERBTN) && !buttonPressed)
+	if (!digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN) && !buttonPressed)
 	{
 		buttonPressStart = millis();
 		buttonPressed = true;
 	};
-	if (digitalRead(CENTERBTN) && buttonPressed)
+	if (digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN) && buttonPressed)
 	{
 		buttonPressEnd = millis();
 		buttonPressed = 0;
@@ -134,7 +134,7 @@ void processLoop()
 
 	if (millis() - buttonPressStart >= 1000 && buttonPressed)
 	{
-		while (!digitalRead(CENTERBTN))
+		while (!digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN))
 			yield();
 		enterMenu();
 	};
