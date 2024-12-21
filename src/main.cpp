@@ -10,7 +10,7 @@
 int fps = 0;
 int frameCounter = 0;
 int targetFps = 20;
-int temp = 0;
+int tempFps = 0;
 
 /* bool up = 0;
 bool left = 0;
@@ -114,11 +114,11 @@ void processLoop()
 	if(isAfk != wasAfk){
 		wasAfk = isAfk;
 		if (isAfk && runningGame != GAME_PONG){
-			temp = targetFps;
+			tempFps = targetFps;
 			targetFps = 5;
 		}
 		else{
-			targetFps = temp;
+			targetFps = tempFps;
 		}
 	}
 	if (!digitalRead(CENTERBTN) && !buttonPressed)
