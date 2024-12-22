@@ -16,6 +16,38 @@ enum ButtonName{
 };
 
 bool buttonIsPressed(ButtonName button);
+void checkButtons();
+
 void buttonsLoop();
+
+bool UPPressed();
+bool LEFTPressed();
+bool CENTERPressed();
+bool RIGHTPressed();
+bool DOWNPressed();
+
+extern bool button1Pressed;
+extern bool button2Pressed;
+extern bool button3Pressed;
+extern bool button4Pressed;
+extern bool button5Pressed;
+
+extern bool button1PressedBef;
+extern bool button2PressedBef;
+extern bool button3PressedBef;
+extern bool button4PressedBef;
+extern bool button5PressedBef;
+
+extern bool button1Clicked;
+extern bool button2Clicked;
+extern bool button3Clicked;
+extern bool button4Clicked;
+extern bool button5Clicked;
+
+extern bool button1Checked;
+extern bool button2Checked;
+extern bool button3Checked;
+extern bool button4Checked;
+extern bool button5Checked;
 
 #endif

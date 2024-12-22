@@ -17,17 +17,17 @@ enum MenuType
 const int gameMenuLen = 5;
 enum GameMenuOption
 {
+	gamemenuoption_TEST,
 	gamemenuoption_PONG,
 	gamemenuoption_SNAKE,
-	gamemenuoption_TEST,
 	gamemenuoption_SETTINGS,
 	gamemenuoption_RESTART,
 };
 
 const String gameMenuOptionsStrings[gameMenuLen] = {
+		"Hardware teszt",
 		"Pong",
 		"Snake",
-		"Hardware teszt",
 		"Beallitasok",
 		"Ujrainditas"};
 
@@ -234,7 +234,7 @@ bool menuLoop()
 	// if (currentMenu != MENU_SETTINGS)
 	//	scrollOffset = 0;
 
-	if (!digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN))
+	if (LEFTPressed() || RIGHTPressed())
 	{
 		switch (currentMenu)
 		{
@@ -243,9 +243,9 @@ bool menuLoop()
 			{
 			case settingsmenuoption_BRIGHTNESS:
 				if (buttonIsPressed(NAME_LEFTBTN))
-					settings.brightness = settings.brightness - (!digitalRead(CENTERBTN) ? 20 : 5);
+					settings.brightness = settings.brightness - (CENTERPressed() ? 20 : 5);
 				if (buttonIsPressed(NAME_RIGHTBTN))
-					settings.brightness = settings.brightness + (!digitalRead(CENTERBTN) ? 20 : 5);
+					settings.brightness = settings.brightness + (CENTERPressed() ? 20 : 5);
 				settings.brightness = constrain(settings.brightness, 0, 255);
 				FastLED.setBrightness(settings.brightness);
 				break;
@@ -254,11 +254,11 @@ bool menuLoop()
 		}
 	}
 
-	if (!digitalRead(CENTERBTN))
+	if (CENTERPressed())
 	{
 
-		while (!digitalRead(CENTERBTN))
-			yield();
+		while (CENTERPressed())
+			processLoop();
 
 		switch (currentMenu)
 		{
@@ -293,6 +293,7 @@ bool menuLoop()
 			{
 			case settingsmenuoption_SOUNDS:
 				settings.soundEnabled = !settings.soundEnabled;
+				if(!settings.soundEnabled) noTone(25);
 				break;
 			case settingsmenuoption_MENUSOUNDS:
 				settings.menuSounds = !settings.menuSounds;

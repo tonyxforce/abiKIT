@@ -24,33 +24,22 @@ void setup()
 	EEPROM.begin(512);
 	loadSettings();
 
-	Serial.println("ledssetup begin");
 	ledsSetup();
 	setLedBrightness(settings.brightness);
-	
-	Serial.println("displaysetup begin");
+
 	delay(10);
-	if (!displaySetup())
-	{
-		Serial.println("Display setup failed");
-	}
-	else
-	{
-		Serial.println("Display setup succeeded");
-	}
-	//u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
-	//u8g2.sendBuffer();
-	//delay(500);
+	displaySetup();
+	// u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
+	// u8g2.sendBuffer();
+	// delay(500);
 	u8g2.clearBuffer();
 	u8g2.sendBuffer();
-	
-	
+
 	pinMode(UPBTN, INPUT_PULLUP);
 	pinMode(LEFTBTN, INPUT_PULLUP);
 	pinMode(CENTERBTN, INPUT_PULLUP);
 	pinMode(RIGHTBTN, INPUT_PULLUP);
 	pinMode(DOWNBTN, INPUT_PULLUP);
-
 
 	networkSetup();
 }
@@ -58,7 +47,6 @@ void setup()
 unsigned int lastFpsCalc = 0;
 unsigned int buttonPressStart = 0;
 bool buttonPressed = false;
-unsigned int buttonPressEnd = 0;
 unsigned int lastFrameRequestTime = 0;
 unsigned int lastUserInteraction = 0;
 bool isAfk = 0;
@@ -84,9 +72,9 @@ void loop()
 	if (millis() - lastFrameRequestTime >= (1000 / targetFps))
 	{
 		newFrame = gameLoop();
-		while (!digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && settings.debugMode)
+		while (!RIGHTPressed() && LEFTPressed() && settings.debugMode)
 			processLoop();
-		while (digitalRead(RIGHTBTN) && !digitalRead(LEFTBTN) && settings.debugMode)
+		while (RIGHTPressed() && LEFTPressed() && settings.debugMode)
 			processLoop();
 		lastFrameRequestTime = millis();
 	}
@@ -99,6 +87,8 @@ void enterMenu()
 
 void processLoop()
 {
+	checkButtons();
+
 	if (millis() - lastFpsCalc >= 1000)
 	{
 		lastFpsCalc = millis();
@@ -106,35 +96,19 @@ void processLoop()
 		frameCounter = 0;
 	}
 
-	if (!digitalRead(UPBTN) || !digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN) || !digitalRead(CENTERBTN) || !digitalRead(DOWNBTN))
-	{
-		lastUserInteraction = millis();
-	}
-	isAfk = (millis() - lastUserInteraction > 10000);
-	if(isAfk != wasAfk){
-		wasAfk = isAfk;
-		if (isAfk && runningGame == GAME_MENU){
-			tempFps = targetFps;
-			targetFps = 5;
-		}
-		else{
-			targetFps = tempFps;
-		}
-	}
-	if (!digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN) && !buttonPressed)
+	if ((!settings.oneHanded ? CENTERPressed() : LEFTPressed()) && !buttonPressed)
 	{
 		buttonPressStart = millis();
 		buttonPressed = true;
 	};
-	if (digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN) && buttonPressed)
+	if (!(!settings.oneHanded ? CENTERPressed() : LEFTPressed()) && buttonPressed)
 	{
-		buttonPressEnd = millis();
 		buttonPressed = 0;
 	};
 
-	if (millis() - buttonPressStart >= 1000 && buttonPressed)
+	if (millis() - buttonPressStart >= 1000 && buttonPressed && (runningGame == GAME_TEST ? (LEFTPressed() && CENTERPressed() && RIGHTPressed() && UPPressed() && DOWNPressed()) : true))
 	{
-		while (!digitalRead(!settings.oneHanded ? CENTERBTN : LEFTBTN))
+		while ((!settings.oneHanded ? CENTERPressed() : LEFTPressed()))
 			yield();
 		enterMenu();
 	};

@@ -41,14 +41,14 @@ void pongSetup()
 
 void handleButtons()
 {
-	if (digitalRead(!settings.oneHanded ? UPBTN : CENTERBTN) == LOW)
+	if (!settings.oneHanded ? UPPressed() : CENTERPressed())
 	{
 		lastUserInput = millis();
 		paddle1Y -= 4;
 		if (paddle1Y < 0)
 			paddle1Y = 0;
 	}
-	if (digitalRead(DOWNBTN) == LOW)
+	if (DOWNPressed())
 	{
 		lastUserInput = millis();
 		paddle1Y += 4;
