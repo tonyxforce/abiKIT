@@ -15,6 +15,7 @@ enum RunningGame{
   GAME_FLAPPYBIRD,
   GAME_BREAKOUT,
 	GAME_DEFAULT,
+	GAME_TEST,
 };
 
 extern RunningGame runningGame;

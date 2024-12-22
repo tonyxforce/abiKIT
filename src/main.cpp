@@ -113,7 +113,7 @@ void processLoop()
 	isAfk = (millis() - lastUserInteraction > 10000);
 	if(isAfk != wasAfk){
 		wasAfk = isAfk;
-		if (isAfk && runningGame != GAME_PONG){
+		if (isAfk && runningGame == GAME_MENU){
 			tempFps = targetFps;
 			targetFps = 5;
 		}

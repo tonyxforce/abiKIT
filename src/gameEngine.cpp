@@ -1,6 +1,7 @@
 #include "gameEngine.h"
 #include "games/pong.h"
 #include "games/snake/snake-game.h"
+#include "games/test/test.h"
 #include "menu.h"
 
 RunningGame runningGame = GAME_MENU;
@@ -28,7 +29,10 @@ bool gameLoop()
 		case GAME_SNAKE:
 			snakeSetup();
 			targetFps = 20;
-
+			break;
+		case GAME_TEST:
+			testSetup();
+			targetFps = 1000;
 			break;
 		}
 		runningGameBef = runningGame;
@@ -44,6 +48,10 @@ bool gameLoop()
 		break;
 	case GAME_SNAKE:
 		snakeLoop();
+		return true;
+		break;
+	case GAME_TEST:
+		testLoop();
 		return true;
 		break;
 	}

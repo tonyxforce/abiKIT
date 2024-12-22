@@ -3,7 +3,6 @@
 #include "settings.h"
 
 void menuSetup() {
-
 };
 
 int selectedOption = 0;
@@ -15,19 +14,20 @@ enum MenuType
 	menutype_NUMBER,
 };
 
-const int gameMenuLen = 4;
-
+const int gameMenuLen = 5;
 enum GameMenuOption
 {
 	gamemenuoption_PONG,
 	gamemenuoption_SNAKE,
+	gamemenuoption_TEST,
 	gamemenuoption_SETTINGS,
 	gamemenuoption_RESTART,
 };
 
-String gameMenuOptionsStrings[gameMenuLen] = {
+const String gameMenuOptionsStrings[gameMenuLen] = {
 		"Pong",
 		"Snake",
+		"Hardware teszt",
 		"Beallitasok",
 		"Ujrainditas"};
 
@@ -43,7 +43,7 @@ enum SettingsMenuOption
 	settingsmenuoption_BACK,
 };
 
-String settingsMenuOptionsStrings[settingsMenuLen] = {
+const String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Hang",
 		"Menu hang",
 		"Egykezes mod",
@@ -53,7 +53,7 @@ String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Vissza",
 };
 
-MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
+const MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
@@ -100,7 +100,33 @@ void renderMenu()
 	u8g2.setDrawColor(1);
 	u8g2.drawLine(0, 9, 128, 9);
 
-	printCenter("Menu", 9);
+	switch (currentMenu)
+	{
+	case MENU_GAMES:
+		
+	printCenter("Fomenu", 9);
+	u8g2.setFontMode(1);
+	u8g2.setFont(u8g2_font_6x13_mf);
+
+	u8g2.setDrawColor(1);
+	if (selectedOption >= 0)
+		u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+	
+
+		optionsCount = gameMenuLen;
+		for (int i = 0; i < optionsCount; i++)
+		{
+			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
+			if (i != selectedOption)
+				printCenter(gameMenuOptionsStrings[i].c_str(), height);
+		}
+		u8g2.setDrawColor(0);
+		printCenter(gameMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10 + (scrollOffset * 9));
+		break;
+
+	case MENU_SETTINGS:
+	
+	printCenter("Beallitasok", 9);
 	u8g2.setFontMode(1);
 	u8g2.setFont(u8g2_font_6x13_mf);
 
@@ -108,20 +134,6 @@ void renderMenu()
 	if (selectedOption >= 0)
 		u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
 
-	switch (currentMenu)
-	{
-	case MENU_GAMES:
-		optionsCount = gameMenuLen;
-		for (int i = 0; i < optionsCount; i++)
-		{
-			if (i != selectedOption)
-				printCenter(gameMenuOptionsStrings[i].c_str(), ((i + 1) * 9) + 10);
-		}
-		u8g2.setDrawColor(0);
-		printCenter(gameMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10);
-		break;
-
-	case MENU_SETTINGS:
 		if (selectedOption == settingsmenuoption_BRIGHTNESS)
 		{
 			fillLeds(0);
@@ -138,43 +150,43 @@ void renderMenu()
 		optionsCount = settingsMenuLen;
 		for (int i = 0; i < optionsCount; i++)
 		{
-			bool baseColor = i != selectedOption;
 			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
-			if (height >= 11)
-			{
+			if (height < 11)
+				continue;
 
+			bool baseColor = i != selectedOption;
+
+			u8g2.setDrawColor(baseColor);
+			printCenter(settingsMenuOptionsStrings[i].c_str(), height);
+			if (settingsMenuOptionsTypes[i] == menutype_CHECKBOX)
+			{
 				u8g2.setDrawColor(baseColor);
-				printCenter(settingsMenuOptionsStrings[i].c_str(), height);
-				if (settingsMenuOptionsTypes[i] == menutype_CHECKBOX)
+				u8g2.drawFrame(110, height - 8, 7, 7);
+				if (optionsConditions[i] != nullptr && optionsConditions[i](settings))
+					u8g2.drawBox(110, height - 8, 7, 7);
+			}
+			else if (settingsMenuOptionsTypes[i] == menutype_NUMBER)
+			{
+				u8g2.setDrawColor(baseColor);
+				String temp = "";
+				switch (i)
 				{
-					u8g2.setDrawColor(baseColor);
-					u8g2.drawFrame(110, height - 8, 7, 7);
-					if (optionsConditions[i] != nullptr && optionsConditions[i](settings))
-						u8g2.drawBox(110, height - 8, 7, 7);
-				}
-				else if (settingsMenuOptionsTypes[i] == menutype_NUMBER)
-				{
-					u8g2.setDrawColor(baseColor);
-					String temp = "";
-					switch (i)
+				case settingsmenuoption_BRIGHTNESS:
+					if (settings.brightness > 0 && settings.brightness != 255)
 					{
-					case settingsmenuoption_BRIGHTNESS:
-						if (settings.brightness > 0 && settings.brightness != 255)
-						{
-							temp += map(settings.brightness, 0, 255, 0, 100);
-							temp += "%";
-						}
-						else
-						{
-							if (settings.brightness == 0)
-								temp += "Ki";
-							else
-								temp += "MAX";
-						}
-						break;
+						temp += map(settings.brightness, 0, 255, 0, 100);
+						temp += "%";
 					}
-					u8g2.drawStr(110, height, temp.c_str());
+					else
+					{
+						if (settings.brightness == 0)
+							temp += "Ki";
+						else
+							temp += "MAX";
+					}
+					break;
 				}
+				u8g2.drawStr(110, height, temp.c_str());
 			}
 		}
 		u8g2.setDrawColor(1); // Reset draw color
@@ -185,12 +197,15 @@ void renderMenu()
 bool menuLoop()
 {
 
-	nextLine();
-	u8g2.setFont(u8g2_font_4x6_mf);
-	u8g2.print(selectedOption);
-	nextLine();
-	u8g2.print(scrollOffset);
-	nextLine();
+	if (settings.debugMode)
+	{
+		nextLine();
+		u8g2.setFont(u8g2_font_4x6_mf);
+		u8g2.print(selectedOption);
+		nextLine();
+		u8g2.print(scrollOffset);
+		nextLine();
+	}
 
 	if (buttonIsPressed(NAME_UPBTN))
 	{
@@ -206,18 +221,18 @@ bool menuLoop()
 
 	selectedOption = constrain(selectedOption, 0, optionsCount - 1);
 
-	if (scrollOffset * -1 - 1 == selectedOption)
+	if (scrollOffset * -1 - 1 == selectedOption && optionsCount > 6)
 	{
 		scrollOffset++;
 	}
 
-	if (scrollOffset * -1 + 6 == selectedOption)
+	if (scrollOffset * -1 + 6 == selectedOption && selectedOption > 5 && optionsCount > 6)
 	{
 		scrollOffset--;
 	}
 
-	if (currentMenu != MENU_SETTINGS)
-		scrollOffset = 0;
+	// if (currentMenu != MENU_SETTINGS)
+	//	scrollOffset = 0;
 
 	if (!digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN))
 	{
@@ -255,6 +270,9 @@ bool menuLoop()
 				break;
 			case gamemenuoption_SNAKE:
 				runningGame = GAME_SNAKE;
+				break;
+			case gamemenuoption_TEST:
+				runningGame = GAME_TEST;
 				break;
 			case gamemenuoption_SETTINGS:
 				switchMenuTo(MENU_SETTINGS);
