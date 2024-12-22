@@ -3,6 +3,7 @@
 #include "games/snake/snake-game.h"
 #include "games/test/test.h"
 #include "menu.h"
+#include "games/breakout/breakout.h"
 
 Game runningGame = GAME_MENU;
 Game runningGameBef = GAME_DEFAULT;
