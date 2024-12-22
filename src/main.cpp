@@ -6,6 +6,7 @@
 #include "buttons.h"
 #include "gameEngine.h"
 #include "bootimg.h"
+#include "serialdriver.h"
 
 int fps = 0;
 int frameCounter = 0;
@@ -20,7 +21,7 @@ bool down = 0; */
 
 void setup()
 {
-	Serial.begin(115200);
+	serialDriverSetup();
 	EEPROM.begin(512);
 	loadSettings();
 
@@ -88,6 +89,7 @@ void enterMenu()
 void processLoop()
 {
 	checkButtons();
+	serialDriverLoop();
 
 	if (millis() - lastFpsCalc >= 1000)
 	{
