@@ -7,62 +7,6 @@ void menuSetup() {
 
 int selectedOption = 0;
 
-enum MenuType
-{
-	menutype_GENERAL,
-	menutype_CHECKBOX,
-	menutype_NUMBER,
-};
-
-const int gameMenuLen = 5;
-enum GameMenuOption
-{
-	gamemenuoption_TEST,
-	gamemenuoption_PONG,
-	gamemenuoption_SNAKE,
-	gamemenuoption_SETTINGS,
-	gamemenuoption_RESTART,
-};
-
-const String gameMenuOptionsStrings[gameMenuLen] = {
-		"Hardware teszt",
-		"Pong",
-		"Snake",
-		"Beallitasok",
-		"Ujrainditas"};
-
-const int settingsMenuLen = 7;
-enum SettingsMenuOption
-{
-	settingsmenuoption_SOUNDS,
-	settingsmenuoption_MENUSOUNDS,
-	settingsmenuoption_ONEHANDED,
-	settingsmenuoption_BRIGHTNESS,
-	settingsmenuoption_CLIENTMODE,
-	settingsmenuoption_DEBUGMODE,
-	settingsmenuoption_BACK,
-};
-
-const String settingsMenuOptionsStrings[settingsMenuLen] = {
-		"Hang",
-		"Menu hang",
-		"Egykezes mod",
-		"Fenyero",
-		"Kliens mod",
-		"Debug mod",
-		"Vissza",
-};
-
-const MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
-		menutype_CHECKBOX,
-		menutype_CHECKBOX,
-		menutype_CHECKBOX,
-		menutype_NUMBER,
-		menutype_CHECKBOX,
-		menutype_CHECKBOX,
-		menutype_GENERAL,
-};
-
 bool (*optionsConditions[])(const Settings &) = {
 		[](const Settings &settings)
 		{ return settings.soundEnabled; }, // settingsmenuoption_SOUNDS
@@ -76,13 +20,6 @@ bool (*optionsConditions[])(const Settings &) = {
 		[](const Settings &settings)
 		{ return settings.debugMode; }, // settingsmenuoption_DEBUGMODE
 		nullptr,												// settingsmenuoption_BACK (if it's not a checkbox or doesn't need a condition)
-};
-
-enum Menu
-{
-	MENU_GAMES,
-	MENU_SETTINGS,
-	MENU_DEFAULT,
 };
 
 Menu currentMenu = MENU_GAMES;
@@ -103,36 +40,37 @@ void renderMenu()
 	switch (currentMenu)
 	{
 	case MENU_GAMES:
-		
-	printCenter("Fomenu", 9);
-	u8g2.setFontMode(1);
-	u8g2.setFont(u8g2_font_6x13_mf);
 
-	u8g2.setDrawColor(1);
-	if (selectedOption >= 0)
-		u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
-	
+		printCenter("Fomenu", 9);
+		u8g2.setFontMode(1);
+		u8g2.setFont(u8g2_font_6x13_mf);
+
+		u8g2.setDrawColor(1);
+		if (selectedOption >= 0)
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
 
 		optionsCount = gameMenuLen;
 		for (int i = 0; i < optionsCount; i++)
 		{
 			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
-			if (i != selectedOption)
+			
+			u8g2.setDrawColor(i != selectedOption);
+			
+			if (height > 11)
 				printCenter(gameMenuOptionsStrings[i].c_str(), height);
 		}
-		u8g2.setDrawColor(0);
-		printCenter(gameMenuOptionsStrings[selectedOption].c_str(), ((selectedOption + 1) * 9) + 10 + (scrollOffset * 9));
+		u8g2.setDrawColor(1);
 		break;
 
 	case MENU_SETTINGS:
-	
-	printCenter("Beallitasok", 9);
-	u8g2.setFontMode(1);
-	u8g2.setFont(u8g2_font_6x13_mf);
 
-	u8g2.setDrawColor(1);
-	if (selectedOption >= 0)
-		u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+		printCenter("Beallitasok", 9);
+		u8g2.setFontMode(1);
+		u8g2.setFont(u8g2_font_6x13_mf);
+
+		u8g2.setDrawColor(1);
+		if (selectedOption >= 0)
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
 
 		if (selectedOption == settingsmenuoption_BRIGHTNESS)
 		{
@@ -211,12 +149,16 @@ bool menuLoop()
 	{
 		beep(600, 50, BEEPTYPE_MENU);
 		selectedOption--;
+		if (currentMenu == MENU_GAMES && selectedOption == gamemenuoption_SPLIT1)
+			selectedOption--;
 	}
 
 	if (buttonIsPressed(NAME_DOWNBTN))
 	{
 		beep(400, 50, BEEPTYPE_MENU);
 		selectedOption++;
+		if (currentMenu == MENU_GAMES && selectedOption == gamemenuoption_SPLIT1)
+			selectedOption++;
 	}
 
 	selectedOption = constrain(selectedOption, 0, optionsCount - 1);
@@ -274,6 +216,9 @@ bool menuLoop()
 			case gamemenuoption_TEST:
 				runningGame = GAME_TEST;
 				break;
+			case gamemenuoption_BREAKOUT:
+				runningGame = GAME_BREAKOUT;
+				break;
 			case gamemenuoption_SETTINGS:
 				switchMenuTo(MENU_SETTINGS);
 				break;
@@ -293,7 +238,8 @@ bool menuLoop()
 			{
 			case settingsmenuoption_SOUNDS:
 				settings.soundEnabled = !settings.soundEnabled;
-				if(!settings.soundEnabled) noTone(25);
+				if (!settings.soundEnabled)
+					noTone(25);
 				break;
 			case settingsmenuoption_MENUSOUNDS:
 				settings.menuSounds = !settings.menuSounds;
