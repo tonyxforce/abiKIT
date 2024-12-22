@@ -8,7 +8,7 @@
 #include "buzzer.h"
 #include "settings.h"
 
-enum RunningGame{
+enum Game{
   GAME_MENU,
 	GAME_PONG,
   GAME_SNAKE,
@@ -18,7 +18,7 @@ enum RunningGame{
 	GAME_TEST,
 };
 
-extern RunningGame runningGame;
+extern Game runningGame;
 
 bool gameLoop();
 #endif

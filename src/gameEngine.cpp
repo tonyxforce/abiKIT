@@ -4,8 +4,8 @@
 #include "games/test/test.h"
 #include "menu.h"
 
-RunningGame runningGame = GAME_MENU;
-RunningGame runningGameBef = GAME_DEFAULT;
+Game runningGame = GAME_MENU;
+Game runningGameBef = GAME_DEFAULT;
 
 bool gameLoop()
 {
