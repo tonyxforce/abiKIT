@@ -60,7 +60,7 @@ bool buttonIsPressed(ButtonName button)
 
 void checkButtons()
 {
-		if (button1Pressed != button1PressedBef)
+	if (button1Pressed != button1PressedBef)
 	{
 		button1PressedBef = button1Pressed;
 		button1Clicked = button1Pressed;
@@ -85,7 +85,7 @@ void checkButtons()
 		button5PressedBef = button5Pressed;
 		button5Clicked = button5Pressed;
 	}
-	
+
 	if (button1Checked)
 	{
 		button1Checked = false;
@@ -119,7 +119,7 @@ void checkButtons()
 	button5Pressed = !digitalRead(DOWNBTN);
 }
 void buttonsLoop()
-{	
+{
 	if (button1Checked)
 	{
 		button1Checked = false;
