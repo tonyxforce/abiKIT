@@ -63,7 +63,7 @@ MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
 		menutype_GENERAL,
 };
 
-bool (*settingsConditions[])(const Settings &) = {
+bool (*optionsConditions[])(const Settings &) = {
 		[](const Settings &settings)
 		{ return settings.soundEnabled; }, // settingsmenuoption_SOUNDS
 		[](const Settings &settings)
@@ -75,7 +75,7 @@ bool (*settingsConditions[])(const Settings &) = {
 		{ return settings.clientMode; }, // settingsmenuoption_CLIENTMODE
 		[](const Settings &settings)
 		{ return settings.debugMode; }, // settingsmenuoption_DEBUGMODE
-		nullptr													// settingsmenuoption_BACK (if it's not a checkbox or doesn't need a condition)
+		nullptr,												// settingsmenuoption_BACK (if it's not a checkbox or doesn't need a condition)
 };
 
 enum Menu
@@ -106,7 +106,7 @@ void renderMenu()
 
 	u8g2.setDrawColor(1);
 	if (selectedOption >= 0)
-		u8g2.drawBox(0, (9 * selectedOption) + 10 + scrollOffset, 128, 9);
+		u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
 
 	switch (currentMenu)
 	{
@@ -139,7 +139,7 @@ void renderMenu()
 		for (int i = 0; i < optionsCount; i++)
 		{
 			bool baseColor = i != selectedOption;
-			int height = ((i + 1) * 9) + 10 + scrollOffset;
+			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
 			if (height >= 11)
 			{
 
@@ -149,10 +149,7 @@ void renderMenu()
 				{
 					u8g2.setDrawColor(baseColor);
 					u8g2.drawFrame(110, height - 8, 7, 7);
-					if ((i == settingsmenuoption_SOUNDS ? settings.soundEnabled : i == settingsmenuoption_DEBUGMODE ? settings.debugMode
-																																		: i == settingsmenuoption_MENUSOUNDS	? settings.menuSounds
-																																		: i == settingsmenuoption_ONEHANDED		? settings.oneHanded
-																																																					: false) == true)
+					if (optionsConditions[i] != nullptr && optionsConditions[i](settings))
 						u8g2.drawBox(110, height - 8, 7, 7);
 				}
 				else if (settingsMenuOptionsTypes[i] == menutype_NUMBER)
@@ -188,40 +185,39 @@ void renderMenu()
 bool menuLoop()
 {
 
+	nextLine();
+	u8g2.setFont(u8g2_font_4x6_mf);
+	u8g2.print(selectedOption);
+	nextLine();
+	u8g2.print(scrollOffset);
+	nextLine();
+
 	if (buttonIsPressed(NAME_UPBTN))
 	{
 		beep(600, 50, BEEPTYPE_MENU);
 		selectedOption--;
-		if (currentMenu != MENU_SETTINGS)
-			selectedOption = constrain(selectedOption, 0, optionsCount - 1);
 	}
 
 	if (buttonIsPressed(NAME_DOWNBTN))
 	{
 		beep(400, 50, BEEPTYPE_MENU);
 		selectedOption++;
-		if (currentMenu != MENU_SETTINGS)
-			selectedOption = constrain(selectedOption, 0, optionsCount - 1);
 	}
 
 	selectedOption = constrain(selectedOption, 0, optionsCount - 1);
 
-	if (selectedOption < 1 || selectedOption > 5)
+	if (scrollOffset * -1 - 1 == selectedOption)
 	{
-		if (currentMenu == MENU_SETTINGS)
-		{
-			if (selectedOption > 5)
-				scrollOffset = 5 * 9 - (selectedOption * 9);
-			else
-			{
-				scrollOffset = 0;
-			}
-		}
-		else
-		{
-			scrollOffset = 0;
-		}
+		scrollOffset++;
 	}
+
+	if (scrollOffset * -1 + 6 == selectedOption)
+	{
+		scrollOffset--;
+	}
+
+	if (currentMenu != MENU_SETTINGS)
+		scrollOffset = 0;
 
 	if (!digitalRead(LEFTBTN) || !digitalRead(RIGHTBTN))
 	{
@@ -297,9 +293,10 @@ bool menuLoop()
 			}
 			if (settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX)
 			{
-				beep(1000, 50, BEEPTYPE_MENU);
 				beep(800, 50, BEEPTYPE_MENU);
 			}
+			if (optionsConditions[selectedOption] != nullptr && optionsConditions[selectedOption](settings))
+				beep(1000, 50, BEEPTYPE_MENU);
 			break;
 		};
 		beep(200, 50, BEEPTYPE_MENU);

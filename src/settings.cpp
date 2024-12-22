@@ -12,7 +12,7 @@
 	 */
 Settings settings = {
 		CONFIG_VERSION, // version
-		10,							// brightness
+		100,						// brightness
 		false,					// debugMode
 		true,						// menusounds
 		false,					// oneHanded
