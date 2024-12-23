@@ -172,3 +172,9 @@ bool DOWNPressed()
 	checkButtons();
 	return button5Pressed;
 };
+
+bool ALLPressed()
+{
+	checkButtons();
+	return button1Pressed && button2Pressed && button3Pressed && button4Pressed && button5Pressed;
+}

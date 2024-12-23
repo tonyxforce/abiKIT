@@ -25,6 +25,7 @@ bool LEFTPressed();
 bool CENTERPressed();
 bool RIGHTPressed();
 bool DOWNPressed();
+bool ALLPressed();
 
 extern bool button1Pressed;
 extern bool button2Pressed;
