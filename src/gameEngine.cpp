@@ -5,6 +5,21 @@
 #include "menu.h"
 #include "games/breakout/breakout.h"
 
+int paddleX;
+
+int paddle1Y, paddle2Y;
+int ballX, ballY;
+int ballVelX, ballVelY;
+
+int score1;
+int score2;
+
+bool player1Auto;
+bool player2Auto;
+
+unsigned long lastUserInput;
+unsigned long lastPacketTime;
+
 Game runningGame = GAME_MENU;
 Game runningGameBef = GAME_DEFAULT;
 
@@ -35,6 +50,10 @@ bool gameLoop()
 			testSetup();
 			targetFps = 1000;
 			break;
+		case GAME_BREAKOUT:
+			breakoutSetup();
+			targetFps = 20;
+			break;
 		}
 		runningGameBef = runningGame;
 	}
@@ -54,6 +73,9 @@ bool gameLoop()
 	case GAME_TEST:
 		testLoop();
 		return true;
+		break;
+	case GAME_BREAKOUT:
+		return breakoutLoop();
 		break;
 	}
 	return false;

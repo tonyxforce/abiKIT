@@ -5,19 +5,6 @@
 #include "display.h"
 #include "buttons.h"
 
-int paddle1Y, paddle2Y;
-int ballX, ballY;
-int ballVelX, ballVelY;
-
-int score1;
-int score2;
-
-bool player1Auto;
-bool player2Auto;
-
-unsigned long lastUserInput;
-unsigned long lastPacketTime;
-
 void pongSetup()
 {
 	paddle1Y = 30;
@@ -39,7 +26,7 @@ void pongSetup()
 	lastPacketTime = millis();
 }
 
-void handleButtons()
+void handlePongButtons()
 {
 	if (!settings.oneHanded ? UPPressed() : CENTERPressed())
 	{
@@ -73,7 +60,7 @@ void handleButtons()
 	}
 }
 
-void updateGame()
+void updatePong()
 {
 	ballX += ballVelX;
 	ballY += ballVelY;
@@ -128,7 +115,7 @@ void updateGame()
 	}
 }
 
-void drawGame()
+void drawPong()
 {
 	u8g2.drawBox(0, paddle1Y, 2, 16);		// Draw paddle 1
 	u8g2.drawBox(126, paddle2Y, 2, 16); // Draw paddle 2
@@ -173,7 +160,7 @@ void drawGame()
 	}
 }
 
-void sendGameState()
+void sendPongState()
 {
 	String gameState = String(paddle1Y) + "," + String(ballX) + "," + String(ballY);
 
@@ -184,7 +171,7 @@ void sendGameState()
 	udp.endPacket();
 }
 
-void receivePaddlePosition()
+void receivePongPaddlePosition()
 {
 	int packetSize = udp.parsePacket();
 	if (packetSize)
@@ -218,9 +205,9 @@ void receivePaddlePosition()
 
 void pongLoop()
 {
-	handleButtons();
-	updateGame();
-	drawGame();
-	sendGameState();
-	receivePaddlePosition();
+	handlePongButtons();
+	updatePong();
+	drawPong();
+	sendPongState();
+	receivePongPaddlePosition();
 }

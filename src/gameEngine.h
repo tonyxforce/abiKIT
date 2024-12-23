@@ -20,5 +20,11 @@ enum Game{
 
 extern Game runningGame;
 
+extern int paddle1Y, paddle2Y, ballX, ballY, ballVelX, ballVelY, score1, score2; // Pong variables
+extern int paddleX; // Breakout variables
+
+extern bool player1Auto, player2Auto;
+extern unsigned long lastUserInput, lastPacketTime;
+
 bool gameLoop();
 #endif
