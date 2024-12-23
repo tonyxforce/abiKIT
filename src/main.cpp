@@ -108,9 +108,9 @@ void processLoop()
 		buttonPressed = 0;
 	};
 
-	if (millis() - buttonPressStart >= 1000 && buttonPressed && (runningGame == GAME_TEST ? (LEFTPressed() && CENTERPressed() && RIGHTPressed() && UPPressed() && DOWNPressed()) : true))
+	if (millis() - buttonPressStart >= 1000 && buttonPressed && (runningGame == GAME_TEST ? ALLPressed() : true))
 	{
-		while ((!settings.oneHanded ? CENTERPressed() : LEFTPressed()))
+		while ((settings.oneHanded ? LEFTPressed() : (runningGame == GAME_TEST ? ALLPressed() : CENTERPressed())))
 			yield();
 		enterMenu();
 	};
