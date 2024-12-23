@@ -7,6 +7,7 @@ void testSetup() {
 int y = 0;
 uint8_t a = 0;
 void switchToNextLine();
+void printRight(String text);
 
 void testLoop()
 {
@@ -39,15 +40,15 @@ void testLoop()
 	y = 9;
 	u8g2.setFont(u8g2_font_6x13_mf);
 
-	u8g2.print(!UPPressed() ? "Fel ki" : "Fel be");
+	printRight(!UPPressed() ? "Fel ki" : "Fel be");
 	switchToNextLine();
-	u8g2.print(!LEFTPressed() ? "Bal ki" : "Bal be");
+	printRight(!LEFTPressed() ? "Bal ki" : "Bal be");
 	switchToNextLine();
-	u8g2.print(!CENTERPressed() ? "Kozep ki" : "Kozep be");
+	printRight(!CENTERPressed() ? "Kozep ki" : "Kozep be");
 	switchToNextLine();
-	u8g2.print(!RIGHTPressed() ? "Jobb ki" : "Jobb be");
+	printRight(!RIGHTPressed() ? "Jobb ki" : "Jobb be");
 	switchToNextLine();
-	u8g2.print(!DOWNPressed() ? "Le ki" : "Le be");
+	printRight(!DOWNPressed() ? "Le ki" : "Le be");
 	switchToNextLine();
 
 	a++;
@@ -56,15 +57,21 @@ void testLoop()
 	checkButtons();
 
 	switchToNextLine();
-	u8g2.print(buttonIsPressed(NAME_UPBTN) ? "1" : "0");
-	u8g2.print(buttonIsPressed(NAME_LEFTBTN) ? "1" : "0");
-	u8g2.print(buttonIsPressed(NAME_CENTERBTN) ? "1" : "0");
-	u8g2.print(buttonIsPressed(NAME_RIGHTBTN) ? "1" : "0");
-	u8g2.print(buttonIsPressed(NAME_DOWNBTN) ? "1" : "0");
+	printRight(buttonIsPressed(NAME_UPBTN) ? "1" : "0");
+	printRight(buttonIsPressed(NAME_LEFTBTN) ? "1" : "0");
+	printRight(buttonIsPressed(NAME_CENTERBTN) ? "1" : "0");
+	printRight(buttonIsPressed(NAME_RIGHTBTN) ? "1" : "0");
+	printRight(buttonIsPressed(NAME_DOWNBTN) ? "1" : "0");
 };
 
 void switchToNextLine()
 {
 	y += 9;
 	u8g2.setCursor(0, y);
+};
+
+void printRight(String text)
+{
+	u8g2.setCursor(128 - u8g2.getStrWidth(text.c_str()), y);
+	u8g2.print(text);
 };
