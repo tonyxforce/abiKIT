@@ -53,9 +53,9 @@ void renderMenu()
 		for (int i = 0; i < optionsCount; i++)
 		{
 			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
-			
+
 			u8g2.setDrawColor(i != selectedOption);
-			
+
 			if (height > 11)
 				printCenter(gameMenuOptionsStrings[i].c_str(), height);
 		}
@@ -184,10 +184,11 @@ bool menuLoop()
 			switch (selectedOption)
 			{
 			case settingsmenuoption_BRIGHTNESS:
-				if (buttonIsPressed(NAME_LEFTBTN))
-					settings.brightness = settings.brightness - (CENTERPressed() ? 20 : 5);
-				if (buttonIsPressed(NAME_RIGHTBTN))
-					settings.brightness = settings.brightness + (CENTERPressed() ? 20 : 5);
+				if (LEFTPressed())
+					settings.brightness-=5;
+				if (RIGHTPressed())
+					settings.brightness+=5;
+
 				settings.brightness = constrain(settings.brightness, 0, 255);
 				FastLED.setBrightness(settings.brightness);
 				break;
@@ -213,9 +214,11 @@ bool menuLoop()
 			case gamemenuoption_SNAKE:
 				runningGame = GAME_SNAKE;
 				break;
+#if !RELEASE
 			case gamemenuoption_TEST:
 				runningGame = GAME_TEST;
 				break;
+#endif
 			case gamemenuoption_BREAKOUT:
 				runningGame = GAME_BREAKOUT;
 				break;

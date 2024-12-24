@@ -9,13 +9,18 @@ uint8_t a = 0;
 void switchToNextLine();
 void printRight(String text);
 
+CRGB::HTMLColorCode color = CRGB::Black;
+
 void testLoop()
 {
-	CRGB::HTMLColorCode color = UPPressed() ? CRGB::Red : LEFTPressed() ? CRGB::Green
-																										: CENTERPressed() ? CRGB::Blue
-																										: RIGHTPressed()	? CRGB::White
-																										: DOWNPressed()		? CRGB::Yellow
-																																			: CRGB::Black;
+
+	color = UPPressed()				? CRGB::Black
+					: LEFTPressed()		? CRGB::Red
+					: CENTERPressed() ? CRGB::Green
+					: RIGHTPressed()	? CRGB::Blue
+					: DOWNPressed()		? CRGB::White
+														: color;
+
 	fillLeds(color);
 
 	switch (color)
@@ -57,11 +62,11 @@ void testLoop()
 	checkButtons();
 
 	switchToNextLine();
-	printRight(buttonIsPressed(NAME_UPBTN) ? "1" : "0");
-	printRight(buttonIsPressed(NAME_LEFTBTN) ? "1" : "0");
-	printRight(buttonIsPressed(NAME_CENTERBTN) ? "1" : "0");
-	printRight(buttonIsPressed(NAME_RIGHTBTN) ? "1" : "0");
-	printRight(buttonIsPressed(NAME_DOWNBTN) ? "1" : "0");
+	u8g2.print(buttonIsPressed(NAME_UPBTN) ? "1" : "0");
+	u8g2.print(buttonIsPressed(NAME_LEFTBTN) ? "1" : "0");
+	u8g2.print(buttonIsPressed(NAME_CENTERBTN) ? "1" : "0");
+	u8g2.print(buttonIsPressed(NAME_RIGHTBTN) ? "1" : "0");
+	u8g2.print(buttonIsPressed(NAME_DOWNBTN) ? "1" : "0");
 };
 
 void switchToNextLine()

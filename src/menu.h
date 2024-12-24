@@ -11,10 +11,17 @@ enum MenuType
 	menutype_NUMBER,
 };
 
+#if RELEASE
+const int gameMenuLen = 6;
+#else
 const int gameMenuLen = 7;
+#endif
+
 enum GameMenuOption
 {
+	#if !RELEASE
 	gamemenuoption_TEST,
+	#endif
 	gamemenuoption_PONG,
 	gamemenuoption_SNAKE,
 	gamemenuoption_BREAKOUT,
@@ -24,7 +31,9 @@ enum GameMenuOption
 };
 
 const String gameMenuOptionsStrings[gameMenuLen] = {
+	#if !RELEASE
 		"Hardware teszt",
+	#endif
 		"Pong",
 		"Snake",
 		"Breakout",
