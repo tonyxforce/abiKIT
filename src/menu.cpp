@@ -35,7 +35,7 @@ void renderMenu()
 {
 	u8g2.setFont(u8g2_font_6x13_tf);
 	u8g2.setDrawColor(1);
-	u8g2.drawLine(0, 9, 128, 9);
+	u8g2.drawLine(0, 9, DISPLAYW, 9);
 
 	switch (currentMenu)
 	{
@@ -47,7 +47,7 @@ void renderMenu()
 
 		u8g2.setDrawColor(1);
 		if (selectedOption >= 0)
-			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), DISPLAYW, 9);
 
 		optionsCount = gameMenuLen;
 		for (int i = 0; i < optionsCount; i++)
@@ -70,7 +70,7 @@ void renderMenu()
 
 		u8g2.setDrawColor(1);
 		if (selectedOption >= 0)
-			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), DISPLAYW, 9);
 
 		if (selectedOption == settingsmenuoption_BRIGHTNESS)
 		{
