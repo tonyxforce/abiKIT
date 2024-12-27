@@ -7,6 +7,7 @@
 #include "gameEngine.h"
 #include "bootimg.h"
 #include "serialdriver.h"
+#include "OTA.h"
 
 int fps = 0;
 int frameCounter = 0;
@@ -43,6 +44,7 @@ void setup()
 	pinMode(DOWNBTN, INPUT_PULLUP);
 
 	networkSetup();
+	otaSetup();
 }
 
 unsigned int lastFpsCalc = 0;
@@ -90,6 +92,7 @@ void processLoop()
 {
 	checkButtons();
 	serialDriverLoop();
+	otaLoop();
 
 	if (millis() - lastFpsCalc >= 1000)
 	{

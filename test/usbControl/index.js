@@ -27,14 +27,16 @@ const Game = [
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 
-var sp = new SerialPort({ path: "COM8", baudRate: 921600 });
+var sp = new SerialPort({ path: "COM10", baudRate: 921600 });
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 sp.on("open", async () => {
     console.log("OPEN");
 
-    switchSelectedTo("04");
+    //switchSelectedTo("02");
+		//switchToMenu(MENU_SETTINGS);
+		switchGameTo(GAME_PONG);
 
     process.exit();
 });
