@@ -66,7 +66,7 @@ void updatePong()
 	ballY += ballVelY;
 
 	// Ball collision with top/bottom
-	if (ballY <= 0 || ballY >= 64)
+	if (ballY <= 0 || ballY >= DISPLAYH)
 	{
 		ballVelY = -ballVelY;
 		beep(200, 50, BEEPTYPE_GAME);
@@ -83,7 +83,7 @@ void updatePong()
 	{
 		leds[3].blue = 0;
 	}
-	if (ballX >= 124 && ballY >= paddle2Y && ballY <= paddle2Y + 16)
+	if (ballX >= DISPLAYH-4 && ballY >= paddle2Y && ballY <= paddle2Y + 16)
 	{
 		ballVelX = -ballVelX;
 		beep(400, 50, BEEPTYPE_GAME);

@@ -185,9 +185,9 @@ bool menuLoop()
 			{
 			case settingsmenuoption_BRIGHTNESS:
 				if (LEFTPressed())
-					settings.brightness-=5;
+					settings.brightness -= 5;
 				if (RIGHTPressed())
-					settings.brightness+=5;
+					settings.brightness += 5;
 
 				settings.brightness = constrain(settings.brightness, 0, 255);
 				FastLED.setBrightness(settings.brightness);
@@ -250,13 +250,16 @@ bool menuLoop()
 			case settingsmenuoption_DEBUGMODE:
 				settings.debugMode = !settings.debugMode;
 				break;
+			case settingsmenuoption_ONEHANDED:
+				settings.oneHanded = !settings.oneHanded;
+				break;
+			case settingsmenuoption_SHOWFPS:
+				settings.showFps = !settings.showFps;
+				break;
 
 			case settingsmenuoption_BACK:
 				saveSettings();
 				goBack();
-				break;
-			case settingsmenuoption_ONEHANDED:
-				settings.oneHanded = !settings.oneHanded;
 				break;
 			}
 			if (settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX)

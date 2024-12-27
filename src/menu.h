@@ -41,7 +41,7 @@ const String gameMenuOptionsStrings[gameMenuLen] = {
 		"Beallitasok",
 		"Ujrainditas"};
 
-const int settingsMenuLen = 7;
+const int settingsMenuLen = 8;
 enum SettingsMenuOption
 {
 	settingsmenuoption_SOUNDS,
@@ -50,6 +50,7 @@ enum SettingsMenuOption
 	settingsmenuoption_BRIGHTNESS,
 	settingsmenuoption_CLIENTMODE,
 	settingsmenuoption_DEBUGMODE,
+	settingsmenuoption_SHOWFPS,
 	settingsmenuoption_BACK,
 };
 
@@ -60,6 +61,7 @@ const String settingsMenuOptionsStrings[settingsMenuLen] = {
 		"Fenyero",
 		"Kliens mod",
 		"Debug mod",
+		"FPS mutatasa",
 		"Vissza",
 };
 
@@ -68,6 +70,7 @@ const MenuType settingsMenuOptionsTypes[settingsMenuLen] = {
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
 		menutype_NUMBER,
+		menutype_CHECKBOX,
 		menutype_CHECKBOX,
 		menutype_CHECKBOX,
 		menutype_GENERAL,
