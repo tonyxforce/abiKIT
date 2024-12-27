@@ -35,7 +35,7 @@ void renderMenu()
 {
 	u8g2.setFont(u8g2_font_6x13_tf);
 	u8g2.setDrawColor(1);
-	u8g2.drawLine(0, 9, 128, 9);
+	u8g2.drawLine(0, 9, DISPLAYW, 9);
 
 	switch (currentMenu)
 	{
@@ -47,15 +47,15 @@ void renderMenu()
 
 		u8g2.setDrawColor(1);
 		if (selectedOption >= 0)
-			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), DISPLAYW, 9);
 
 		optionsCount = gameMenuLen;
 		for (int i = 0; i < optionsCount; i++)
 		{
 			int height = ((i + 1) * 9) + 10 + (scrollOffset * 9);
-			
+
 			u8g2.setDrawColor(i != selectedOption);
-			
+
 			if (height > 11)
 				printCenter(gameMenuOptionsStrings[i].c_str(), height);
 		}
@@ -70,7 +70,7 @@ void renderMenu()
 
 		u8g2.setDrawColor(1);
 		if (selectedOption >= 0)
-			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), 128, 9);
+			u8g2.drawBox(0, (9 * selectedOption) + 10 + (scrollOffset * 9), DISPLAYW, 9);
 
 		if (selectedOption == settingsmenuoption_BRIGHTNESS)
 		{
@@ -184,10 +184,11 @@ bool menuLoop()
 			switch (selectedOption)
 			{
 			case settingsmenuoption_BRIGHTNESS:
-				if (buttonIsPressed(NAME_LEFTBTN))
-					settings.brightness = settings.brightness - (CENTERPressed() ? 20 : 5);
-				if (buttonIsPressed(NAME_RIGHTBTN))
-					settings.brightness = settings.brightness + (CENTERPressed() ? 20 : 5);
+				if (LEFTPressed())
+					settings.brightness -= 5;
+				if (RIGHTPressed())
+					settings.brightness += 5;
+
 				settings.brightness = constrain(settings.brightness, 0, 255);
 				FastLED.setBrightness(settings.brightness);
 				break;
@@ -213,9 +214,11 @@ bool menuLoop()
 			case gamemenuoption_SNAKE:
 				runningGame = GAME_SNAKE;
 				break;
+#if !RELEASE
 			case gamemenuoption_TEST:
 				runningGame = GAME_TEST;
 				break;
+#endif
 			case gamemenuoption_BREAKOUT:
 				runningGame = GAME_BREAKOUT;
 				break;
@@ -247,13 +250,16 @@ bool menuLoop()
 			case settingsmenuoption_DEBUGMODE:
 				settings.debugMode = !settings.debugMode;
 				break;
+			case settingsmenuoption_ONEHANDED:
+				settings.oneHanded = !settings.oneHanded;
+				break;
+			case settingsmenuoption_SHOWFPS:
+				settings.showFps = !settings.showFps;
+				break;
 
 			case settingsmenuoption_BACK:
 				saveSettings();
 				goBack();
-				break;
-			case settingsmenuoption_ONEHANDED:
-				settings.oneHanded = !settings.oneHanded;
 				break;
 			}
 			if (settingsMenuOptionsTypes[selectedOption] == menutype_CHECKBOX)

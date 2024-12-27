@@ -14,12 +14,6 @@ int frameCounter = 0;
 int targetFps = 20;
 int tempFps = 0;
 
-/* bool up = 0;
-bool left = 0;
-bool center = 0;
-bool right = 0;
-bool down = 0; */
-
 void setup()
 {
 	serialDriverSetup();
@@ -66,11 +60,14 @@ void loop()
 	buttonsLoop();
 
 	u8g2.setDrawColor(1);
-	u8g2.setCursor(0, 6);
-	u8g2.setFont(u8g2_font_4x6_mf);
-	u8g2.print(fps);
-	u8g2.print("FPS");
-	nextLine();
+	if (settings.showFps)
+	{
+		u8g2.setCursor(0, 6);
+		u8g2.setFont(u8g2_font_4x6_mf);
+		u8g2.print(fps);
+		u8g2.print("FPS");
+		nextLine();
+	}
 
 	if (millis() - lastFrameRequestTime >= (1000 / targetFps))
 	{

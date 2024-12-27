@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#define CONFIG_VERSION "002"
+#define CONFIG_VERSION "003"
 
 // Dont change this
 #define CONFIG_START 0
@@ -18,7 +18,7 @@ struct Settings
 	bool oneHanded;
 	bool soundEnabled;
 	bool clientMode;
-	uint8_t resetCounter, wdtCounter;
+	bool showFps;
 };
 
 extern Settings settings;

@@ -5,11 +5,11 @@
 #include "menu.h"
 #include "games/breakout/breakout.h"
 
-int paddleX;
+float paddleX;
 
 int paddle1Y, paddle2Y;
-int ballX, ballY;
-int ballVelX, ballVelY;
+float ballX, ballY;
+float ballVelX, ballVelY;
 
 int score1;
 int score2;
