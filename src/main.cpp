@@ -16,7 +16,7 @@ int tempFps = 0;
 
 void setup()
 {
-	serialDriverSetup();
+	Serial.begin(115200);
 	EEPROM.begin(512);
 	loadSettings();
 
@@ -25,6 +25,7 @@ void setup()
 
 	delay(10);
 	displaySetup();
+	Wire.setClock(400000);
 	// u8g2.drawXBMP(0, 0, 128, 64, epd_bitmap_bootimg);
 	// u8g2.sendBuffer();
 	// delay(500);
@@ -53,11 +54,20 @@ void enterMenu();
 void processLoop();
 
 bool newFrame = false;
+//unsigned long timingStart = millis();
 
 void loop()
 {
 	processLoop();
-	buttonsLoop();
+	//Serial.print("processLoop took ");
+	//Serial.print(millis() - timingStart);
+	//Serial.println("ms");
+	//timingStart = millis();
+	//buttonsLoop();
+	//Serial.print("buttonsLoop took ");
+	//Serial.print(millis() - timingStart);
+	//Serial.println("ms");
+	//timingStart = millis();
 
 	u8g2.setDrawColor(1);
 	if (settings.showFps)
@@ -68,6 +78,10 @@ void loop()
 		u8g2.print("FPS");
 		nextLine();
 	}
+	//Serial.print("Printing FPS took ");
+	//Serial.print(millis() - timingStart);
+	//Serial.println("ms");
+	//timingStart = millis();
 
 	if (millis() - lastFrameRequestTime >= (1000 / targetFps))
 	{
@@ -78,6 +92,11 @@ void loop()
 			processLoop();
 		lastFrameRequestTime = millis();
 	}
+
+	//Serial.print("gameLoop took ");
+	//Serial.print(millis() - timingStart);
+	//Serial.println("ms");
+	newFrame = true;
 }
 
 void enterMenu()

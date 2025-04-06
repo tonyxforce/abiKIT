@@ -1,10 +1,5 @@
 #include "serialdriver.h"
 
-void serialDriverSetup()
-{
-	Serial.begin(921600);
-};
-
 void serialDriverLoop()
 {
 	if (Serial.available() > 1)
